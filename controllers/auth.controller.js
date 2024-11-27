@@ -6,6 +6,7 @@ const {
 const authController = require("express").Router();
 const axios = require("axios");
 const { findUserById, createUser } = require("../services/user.service");
+const { kakaoRestApiKey, kakaoRedirectUrl } = require("../consts/kakaoConfig");
 
 authController.get("/google-oauth", (_req, res) => {
   const googleOauthEntryUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${googleOauthRedirectUrl}&response_type=code&scope=email profile`;
@@ -42,6 +43,56 @@ authController.get("/google-oauth-redirect", async (req, res) => {
     }
   } catch (error) {
     return res.json({ isError: true, message: "Fail to signin with google" });
+  }
+});
+
+authController.get("/kakao-oauth", (_req, res) => {
+  const kakaoOauthEntryUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakaoRestApiKey}&redirect_uri=${kakaoRedirectUrl}`;
+  res.redirect(kakaoOauthEntryUrl);
+});
+
+authController.get("/kakao-oauth-redirect", async (req, res) => {
+  try {
+    const { code } = req.query;
+    const requestToken = await axios.post(
+      "https://kauth.kakao.com/oauth/token",
+      {
+        code,
+        client_id: kakaoRestApiKey,
+        redirect_uri: kakaoRedirectUrl,
+        grant_type: "authorization_code",
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+        },
+      }
+    );
+    const { access_token } = requestToken.data;
+    const request = await axios.get("https://kapi.kakao.com/v2/user/me", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+      },
+    });
+    if (request.data) {
+      const { id } = request.data;
+      const existingUser = await findUserById({ id });
+      if (!existingUser) {
+        const { nickname: username, profile_image: userImage } =
+          request.data.properties;
+        const user = await createUser({
+          id,
+          username,
+          userImage,
+          email: `${username}@kakao.com`,
+        });
+      }
+      res.redirect("http://localhost:5173");
+    }
+  } catch (error) {
+    console.log(error);
+    return res.json({ isError: true, message: "Fail to signin with kakao" });
   }
 });
 
