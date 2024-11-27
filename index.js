@@ -1,7 +1,6 @@
 const express = require("express");
 const { PORT } = require("./consts/app");
 const apiController = require("./controllers");
-const User = require("./schemas/user.schema");
 
 const app = express();
 app.use(express.json());
