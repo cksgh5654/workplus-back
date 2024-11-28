@@ -76,4 +76,19 @@ userController.patch("/profile/phone", async (req, res) => {
   }
 });
 
+userController.patch("/profile/address", async (req, res) => {
+  try {
+    const updated = await updateUserById({
+      id: req.body.id,
+      address: req.body.address,
+    });
+    if (!updated) {
+      return res.status(500).json({ isError: false, message: "업데이트 실패" });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: false, message: error.message });
+  }
+});
+
 module.exports = userController;
