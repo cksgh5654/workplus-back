@@ -6,7 +6,6 @@ const {
 const authController = require("express").Router();
 const axios = require("axios");
 const {
-  findUserById,
   createUser,
   findUserByEmail,
   updateUserByEmail,
