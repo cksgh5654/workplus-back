@@ -15,6 +15,32 @@ const { kakaoRestApiKey, kakaoRedirectUrl } = require("../consts/kakaoConfig");
 const crypto = require("crypto");
 const { sendMail } = require("../utils/nodmailer.util");
 
+authController.patch("/password", async (req, res) => {
+  const { email, password } = req.body;
+
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(password)
+    .digest("base64");
+
+  try {
+    const user = await findUserByEmail({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "이메일을 확인 해주세요." });
+    }
+    const updated = await updateUserByEmail({
+      email,
+      password: hashedPassword,
+    });
+
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
 authController.post("/send-email", async (req, res) => {
   const { email } = req.body;
   const token = crypto.randomBytes(32).toString("hex");
