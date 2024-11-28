@@ -3,6 +3,10 @@ const { String } = mongoose.Schema.Types;
 
 const vacationSchema = new mongoose.Schema(
   {
+    requesterId: {
+      type: String,
+      required: true,
+    },
     username: {
       type: String,
       required: true,
