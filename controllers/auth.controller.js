@@ -5,8 +5,38 @@ const {
 } = require("../consts/googleConfig");
 const authController = require("express").Router();
 const axios = require("axios");
-const { findUserById, createUser } = require("../services/user.service");
+const {
+  findUserById,
+  createUser,
+  findUserByEmail,
+} = require("../services/user.service");
 const { kakaoRestApiKey, kakaoRedirectUrl } = require("../consts/kakaoConfig");
+const crypto = require("crypto");
+const { sendMail } = require("../utils/nodmailer.util");
+
+authController.post("/send-email", async (req, res) => {
+  const { email } = req.body;
+  const token = crypto.randomBytes(32).toString("hex");
+  const expires = Date.now() + 5 * 60 * 1000;
+  const userData = {
+    email,
+    token: { value: token, expires },
+    status: false,
+  };
+  try {
+    const user = await createUser(userData);
+    await sendMail(email, token, expires);
+
+    return res
+      .status(200)
+      .json({ isError: false, message: "success to send email" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ isError: false, message: "fail to send email" });
+  }
+});
 
 authController.get("/google-oauth", (_req, res) => {
   const googleOauthEntryUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${googleOauthRedirectUrl}&response_type=code&scope=email profile`;
