@@ -9,6 +9,7 @@ const {
   findUserById,
   createUser,
   findUserByEmail,
+  updateUserByEmail,
 } = require("../services/user.service");
 const { kakaoRestApiKey, kakaoRedirectUrl } = require("../consts/kakaoConfig");
 const crypto = require("crypto");
@@ -61,6 +62,8 @@ authController.post("/verify-email", async (req, res) => {
         .json({ isError: true, message: "토큰이 만료 되었습니다." });
     }
 
+    await updateUserByEmail({ email, status: true });
+
     return res
       .status(200)
       .json({ isError: false, message: "이메일 인증 성공" });
@@ -70,11 +73,44 @@ authController.post("/verify-email", async (req, res) => {
   }
 });
 
-// authController.post("/signup", (req, res) => {
-//   const { email, username, password } = req.body;
-// });
+authController.post("/signup", async (req, res) => {
+  const { email, username, password } = req.body;
+  if (!email || !username || !password) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "유저 정보를 확인해주세요." });
+  }
 
-// authController.post("/signin", (req, res) => {});
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(password)
+    .digest("base64");
+
+  try {
+    const existingUser = await findUserByEmail({ email });
+    if (!existingUser || !existingUser.status) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "이메일 인증이 필요합니다." });
+    }
+
+    const user = await updateUserByEmail({
+      email,
+      username,
+      password: hashedPassword,
+    });
+    if (!user) {
+      return res
+        .status(500)
+        .json({ isError: false, message: "회원 가입 실패" });
+    }
+    return res.status(201).json({ isError: false, message: "회원 가입 성공" });
+  } catch (error) {
+    return res.json({ isError: true, message: error.message });
+  }
+});
+
+authController.post("/signin", (req, res) => {});
 
 authController.get("/google-oauth", (_req, res) => {
   const googleOauthEntryUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${googleOauthRedirectUrl}&response_type=code&scope=email profile`;
