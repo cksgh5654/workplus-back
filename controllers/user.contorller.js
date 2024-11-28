@@ -1,5 +1,5 @@
 const withAuth = require("../middlewares/auth");
-const { findUserById } = require("../services/user.service");
+const { findUserById, updateUserById } = require("../services/user.service");
 
 const userController = require("express").Router();
 
@@ -28,6 +28,21 @@ userController.get("/profile/:id", withAuth, async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+userController.patch("/profile/username", async (req, res) => {
+  try {
+    const updated = await updateUserById({
+      id: req.body.id,
+      username: req.body.username,
+    });
+    if (!updated) {
+      return res.status(500).json({ isError: false, message: "업데이트 실패" });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: false, message: error.message });
   }
 });
 
