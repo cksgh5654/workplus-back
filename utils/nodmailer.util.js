@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendMail = async (email, token, expires) => {
-  const emailLink = `http://localhost:5173/login?email=${email}&token=${token}&expires=${expires}`;
+  const emailLink = `http://localhost:5173/signup?email=${email}&token=${token}&expires=${expires}`;
   const mailOptions = {
     from: nodemailerAuthEmail,
     to: email,
