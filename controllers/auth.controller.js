@@ -67,7 +67,6 @@ authController.post("/send-email", async (req, res) => {
 
 authController.post("/verify-email", async (req, res) => {
   const { email, token: reqToekn } = req.body;
-  console.log;
   try {
     const userFromDB = await findUserByEmail({ email });
     if (!userFromDB) {
@@ -88,7 +87,11 @@ authController.post("/verify-email", async (req, res) => {
         .json({ isError: true, message: "토큰이 만료 되었습니다." });
     }
 
-    await updateUserByEmail({ email, status: true });
+    await updateUserByEmail({
+      email,
+      status: true,
+      token: { value: "", expries: "" },
+    });
 
     return res
       .status(200)
