@@ -12,7 +12,7 @@ const createUser = (userData) => {
 const findUserById = async (id) => {
   try {
     const document = await User.findOne(id);
-    return !!document === null ? false : true;
+    return document;
   } catch (error) {
     throw new Error(error);
   }

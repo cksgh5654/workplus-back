@@ -163,7 +163,7 @@ authController.post("/signin", async (req, res) => {
     }
 
     const token = jwt.sign({ email }, JWT_SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: 1000 * 60 * 60,
     });
 
     res.setHeader("token", token);
@@ -205,7 +205,7 @@ authController.get("/google-oauth-redirect", async (req, res) => {
         const user = await createUser({ id, username, email, userImage });
       }
       const token = jwt.sign({ email }, JWT_SECRET_KEY, {
-        expiresIn: "1h",
+        expiresIn: 1000 * 60 * 60,
       });
       res.redirect(`http://localhost:5173/login?token=${token}`);
     }
@@ -262,7 +262,7 @@ authController.get("/kakao-oauth-redirect", async (req, res) => {
         { email: `${username}@kakao.com` },
         JWT_SECRET_KEY,
         {
-          expiresIn: "1h",
+          expiresIn: 1000 * 60 * 60,
         }
       );
 
