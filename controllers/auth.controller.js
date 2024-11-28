@@ -60,10 +60,9 @@ authController.post("/send-email", async (req, res) => {
       .status(200)
       .json({ isError: false, message: "success to send email" });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
-      .json({ isError: false, message: "fail to send email" });
+      .json({ isError: true, message: "fail to send email" });
   }
 });
 
