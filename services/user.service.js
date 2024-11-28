@@ -27,10 +27,23 @@ const findUserByEmail = async (email) => {
   }
 };
 
-const updateUser = async (data) => {
-  const { email, ...rest } = data;
+const updateUserById = async (data) => {
+  const { id, ...rest } = data;
   try {
     const updated = await User.updateOne({ _id: id }, rest);
+    if (!updated) {
+      return null;
+    }
+    return updated;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const updateUserByEmail = async (data) => {
+  const { email, ...rest } = data;
+  try {
+    const updated = await User.updateOne({ email }, rest);
     if (!updated) {
       return null;
     }
@@ -44,5 +57,6 @@ module.exports = {
   createUser,
   findUserById,
   findUserByEmail,
-  updateUser,
+  updateUserById,
+  updateUserByEmail,
 };
