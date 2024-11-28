@@ -166,8 +166,13 @@ authController.post("/signin", async (req, res) => {
       expiresIn: 1000 * 60 * 60,
     });
 
+    const user = {
+      email: existingUser.email,
+      username: existingUser.username,
+      id: existingUser._id,
+    };
     res.setHeader("token", token);
-    return res.status(200).json({ isError: false, message: "로그인 성공" });
+    return res.status(200).json({ isError: false, data: { user } });
   } catch (error) {
     return res.json({ isError: true, message: error.message });
   }
@@ -202,12 +207,15 @@ authController.get("/google-oauth-redirect", async (req, res) => {
       const { name: username, email, picture: userImage, id } = request.data;
       const existingUser = await findUserById({ id });
       if (!existingUser) {
-        const user = await createUser({ id, username, email, userImage });
+        await createUser({ id, username, email, userImage });
       }
       const token = jwt.sign({ email }, JWT_SECRET_KEY, {
         expiresIn: 1000 * 60 * 60,
       });
-      res.redirect(`http://localhost:5173/login?token=${token}`);
+      res.setHeader("token", token);
+      res.redirect(
+        `http://localhost:5173/login?username=${existingUser.username}&email=${existingUser.email}&id=${existingUser._id}`
+      );
     }
   } catch (error) {
     return res.json({ isError: true, message: "Fail to signin with google" });
@@ -245,19 +253,17 @@ authController.get("/kakao-oauth-redirect", async (req, res) => {
     });
     if (request.data) {
       const { id } = request.data;
-      const { nickname: username } = request.data.properties;
       const existingUser = await findUserById({ id });
       if (!existingUser) {
-        const { nickname: username, profile_image: userImage } =
-          request.data.properties;
+        const { nickname, profile_image: userImage } = request.data.properties;
         await createUser({
           id,
-          username,
+          username: nickname,
           userImage,
-          email: `${username}@kakao.com`,
+          email: `${nickname}@kakao.com`,
         });
       }
-
+      const { username, _id, email } = existingUser;
       const token = jwt.sign(
         { email: `${username}@kakao.com` },
         JWT_SECRET_KEY,
@@ -265,9 +271,10 @@ authController.get("/kakao-oauth-redirect", async (req, res) => {
           expiresIn: 1000 * 60 * 60,
         }
       );
-
       res.setHeader("token", token);
-      res.redirect(`http://localhost:5173/login?token=${token}`);
+      res.redirect(
+        `http://localhost:5173/login?username=${username}&email=${email}&id=${_id}`
+      );
     }
   } catch (error) {
     console.log(error);
