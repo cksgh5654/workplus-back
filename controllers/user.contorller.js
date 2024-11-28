@@ -1,5 +1,6 @@
 const withAuth = require("../middlewares/auth");
 const { findUserById, updateUserById } = require("../services/user.service");
+const imageUploadMiddleware = require("../utils/imageUpload.util");
 
 const userController = require("express").Router();
 
@@ -90,5 +91,29 @@ userController.patch("/profile/address", async (req, res) => {
     return res.status(500).json({ isError: false, message: error.message });
   }
 });
+
+userController.put(
+  "/profile/image/:id",
+  withAuth,
+  imageUploadMiddleware,
+  async (req, res) => {
+    const fileName = req.file.filename;
+    const url = `http://localhost:8080/images/${fileName}`;
+    try {
+      const updated = await updateUserById({
+        id: req.params.id,
+        userImage: url,
+      });
+      if (!updated) {
+        return res
+          .status(500)
+          .json({ isError: true, message: "업데이트 실패" });
+      }
+      return res.status(200).json({ isError: false, data: { imgUrl: url } });
+    } catch (error) {
+      return res.status(500).json({ isError: false, message: error.message });
+    }
+  }
+);
 
 module.exports = userController;
