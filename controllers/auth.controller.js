@@ -14,6 +14,8 @@ const {
 const { kakaoRestApiKey, kakaoRedirectUrl } = require("../consts/kakaoConfig");
 const crypto = require("crypto");
 const { sendMail } = require("../utils/nodmailer.util");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET_KEY } = require("../consts/app");
 
 authController.patch("/password", async (req, res) => {
   const { email, password } = req.body;
@@ -160,6 +162,11 @@ authController.post("/signin", async (req, res) => {
         .json({ isError: false, message: "회원 정보가 잘 못되었습니다." });
     }
 
+    const token = jwt.sign({ email }, JWT_SECRET_KEY, {
+      expiresIn: "1h",
+    });
+
+    res.setHeader("token", token);
     return res.status(200).json({ isError: false, message: "로그인 성공" });
   } catch (error) {
     return res.json({ isError: true, message: error.message });
@@ -197,7 +204,10 @@ authController.get("/google-oauth-redirect", async (req, res) => {
       if (!existingUser) {
         const user = await createUser({ id, username, email, userImage });
       }
-      res.redirect("http://localhost:5173");
+      const token = jwt.sign({ email }, JWT_SECRET_KEY, {
+        expiresIn: "1h",
+      });
+      res.redirect(`http://localhost:5173/login?token=${token}`);
     }
   } catch (error) {
     return res.json({ isError: true, message: "Fail to signin with google" });
@@ -235,18 +245,29 @@ authController.get("/kakao-oauth-redirect", async (req, res) => {
     });
     if (request.data) {
       const { id } = request.data;
+      const { nickname: username } = request.data.properties;
       const existingUser = await findUserById({ id });
       if (!existingUser) {
         const { nickname: username, profile_image: userImage } =
           request.data.properties;
-        const user = await createUser({
+        await createUser({
           id,
           username,
           userImage,
           email: `${username}@kakao.com`,
         });
       }
-      res.redirect("http://localhost:5173");
+
+      const token = jwt.sign(
+        { email: `${username}@kakao.com` },
+        JWT_SECRET_KEY,
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      res.setHeader("token", token);
+      res.redirect(`http://localhost:5173/login?token=${token}`);
     }
   } catch (error) {
     console.log(error);
