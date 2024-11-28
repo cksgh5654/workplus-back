@@ -9,9 +9,9 @@ const createUser = (userData) => {
   }
 };
 
-const findUserById = async (id) => {
+const findUserById = async ({ id }) => {
   try {
-    const document = await User.findOne(id);
+    const document = await User.findOne({ _id: id });
     return document;
   } catch (error) {
     throw new Error(error);

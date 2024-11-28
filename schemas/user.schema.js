@@ -13,21 +13,26 @@ const userSchema = new mongoose.Schema(
     },
     username: {
       type: String,
+      default: "",
     },
     password: {
       type: String,
     },
     userImage: {
       type: String,
+      default: "",
     },
     phone: {
       type: String,
+      default: "",
     },
     birth: {
       type: String,
+      default: "",
     },
     address: {
       type: String,
+      default: "",
     },
     token: {
       value: { type: String },
