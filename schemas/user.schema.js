@@ -1,5 +1,5 @@
 const mongoose = require("../db_init");
-const { String } = mongoose.Schema.Types;
+const { String, Boolean } = mongoose.Schema.Types;
 
 const userSchema = new mongoose.Schema(
   {
@@ -10,12 +10,9 @@ const userSchema = new mongoose.Schema(
     },
     id: {
       type: String,
-      required: true,
-      unique: true,
     },
     username: {
       type: String,
-      required: true,
     },
     password: {
       type: String,
@@ -31,6 +28,13 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
+    },
+    token: {
+      value: { type: String },
+      expires: { type: String },
+    },
+    status: {
+      type: Boolean,
     },
   },
   {
