@@ -38,6 +38,44 @@ authController.post("/send-email", async (req, res) => {
   }
 });
 
+authController.post("/verify-email", async (req, res) => {
+  const { email, token: reqToekn } = req.body;
+  console.log;
+  try {
+    const userFromDB = await findUserByEmail({ email });
+    if (!userFromDB) {
+      return res
+        .status(404)
+        .json({ isError: true, message: "유저를 찾을 수 없습니다." });
+    }
+
+    if (userFromDB.token.value !== reqToekn.value) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "토큰이 일치 하지 않습니다." });
+    }
+
+    if (reqToekn.expires < Date.now()) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "토큰이 만료 되었습니다." });
+    }
+
+    return res
+      .status(200)
+      .json({ isError: false, message: "이메일 인증 성공" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+// authController.post("/signup", (req, res) => {
+//   const { email, username, password } = req.body;
+// });
+
+// authController.post("/signin", (req, res) => {});
+
 authController.get("/google-oauth", (_req, res) => {
   const googleOauthEntryUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${googleOauthRedirectUrl}&response_type=code&scope=email profile`;
   res.redirect(googleOauthEntryUrl);
