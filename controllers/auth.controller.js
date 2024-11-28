@@ -52,9 +52,11 @@ authController.post("/send-email", async (req, res) => {
     status: false,
   };
   try {
-    const user = await createUser(userData);
+    const user = await findUserByEmail({ email });
+    if (!user) {
+      await createUser(userData);
+    }
     await sendMail(email, token, expires);
-
     return res
       .status(200)
       .json({ isError: false, message: "success to send email" });
