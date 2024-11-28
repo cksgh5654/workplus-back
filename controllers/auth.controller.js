@@ -205,7 +205,7 @@ authController.get("/google-oauth-redirect", async (req, res) => {
     );
     if (request.status === 200) {
       const { name: username, email, picture: userImage, id } = request.data;
-      const existingUser = await findUserById({ id });
+      const existingUser = await findUserByEmail({ email });
       if (!existingUser) {
         await createUser({ id, username, email, userImage });
       }
@@ -253,7 +253,9 @@ authController.get("/kakao-oauth-redirect", async (req, res) => {
     });
     if (request.data) {
       const { id } = request.data;
-      const existingUser = await findUserById({ id });
+      const existingUser = await findUserByEmail({
+        email: `${request.data.properties.nickname}@kakao.com`,
+      });
       if (!existingUser) {
         const { nickname, profile_image: userImage } = request.data.properties;
         await createUser({
