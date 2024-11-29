@@ -4,9 +4,40 @@ const {
   updateMeetingById,
   deleteMeetingById,
   findMyMeetingByUsername,
+  getAllMeetings,
 } = require("../services/meeting.service");
 
 const meetingController = require("express").Router();
+
+meetingController.get("/", async (req, res) => {
+  try {
+    const documents = await getAllMeetings();
+    const meetings = documents.map(
+      ({
+        _id: meetingId,
+        creatorId,
+        attendant,
+        date,
+        startTime,
+        agenda,
+        createdAt,
+      }) => ({
+        meetingId,
+        creatorId,
+        attendant,
+        date,
+        startTime,
+        agenda,
+        createdAt,
+      })
+    );
+    return res.status(200).json({ isError: false, meetings });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ isError: false, message: "회의 데이터 가져오기 실패" });
+  }
+});
 
 meetingController.post("/", async (req, res) => {
   try {

@@ -46,10 +46,20 @@ const findMyMeetingByUsername = async ({ username }) => {
   }
 };
 
+const getAllMeetings = async () => {
+  try {
+    const documents = await Meeting.find();
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createMeeting,
   findMeetingById,
   updateMeetingById,
   deleteMeetingById,
   findMyMeetingByUsername,
+  getAllMeetings,
 };
