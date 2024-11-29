@@ -10,7 +10,6 @@ const {
   findUserByEmail,
   updateUserByEmail,
 } = require("../services/user.service");
-const { kakaoRestApiKey, kakaoRedirectUrl } = require("../consts/kakaoConfig");
 const crypto = require("crypto");
 const { sendMail } = require("../utils/nodmailer.util");
 const jwt = require("jsonwebtoken");
