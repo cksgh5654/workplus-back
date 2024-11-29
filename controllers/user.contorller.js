@@ -116,4 +116,55 @@ userController.put(
   }
 );
 
+userController.post("/checkin/:userId", async (req, res) => {
+  try {
+    const document = await findUserById({ id: req.params.userId });
+    if (document.attendance.status) {
+      return res
+        .status(400)
+        .json({ isError: true, messsage: "이미 출근 상태 입니다." });
+    }
+    const now = Date.now();
+    const attendance = {
+      status: true,
+      timestamps: now,
+    };
+    const updated = await updateUserById({ id: req.params.userId, attendance });
+    if (!updated) {
+      return res.status(500).json({ isError: true, message: "출근 기록 실패" });
+    }
+    return res.status(200).json({ isError: false, data: { attendance } });
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+userController.post("/checkout/:userId", async (req, res) => {
+  try {
+    const document = await findUserById({ id: req.params.userId });
+    if (!document) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "잘못된 유저 정보 요청입니다." });
+    }
+    if (!document.attendance.status) {
+      return res
+        .status(400)
+        .json({ isError: true, messsage: "이미 퇴근 상태 입니다." });
+    }
+    const now = Date.now();
+    const attendance = {
+      status: false,
+      timestamps: now,
+    };
+    const updated = await updateUserById({ id: req.params.userId, attendance });
+    if (!updated) {
+      return res.status(500).json({ isError: true, message: "퇴근 기록 실패" });
+    }
+    return res.status(200).json({ isError: false, data: { attendance } });
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
 module.exports = userController;

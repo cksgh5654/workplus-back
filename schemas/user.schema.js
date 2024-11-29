@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema(
     status: {
       type: Boolean,
     },
+    attendance: {
+      status: { type: Boolean, default: false },
+      timestamps: { type: String, default: "" },
+    },
   },
   {
     timestamps: {
