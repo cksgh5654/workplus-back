@@ -9,4 +9,13 @@ const createMeeting = async (data) => {
   }
 };
 
-module.exports = { createMeeting };
+const findMeetingById = async ({ id }) => {
+  try {
+    const document = await Meeting.findOne({ _id: id });
+    return document;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+module.exports = { createMeeting, findMeetingById };
