@@ -92,7 +92,7 @@ authController.post("/verify-email", async (req, res) => {
     await updateUserByEmail({
       email,
       status: true,
-      token: { value: "", expries: "" },
+      token: { value: "", expires: "" },
     });
 
     return res
