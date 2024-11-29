@@ -2,6 +2,7 @@ const {
   createVacation,
   findVacationById,
   updateVacationById,
+  deleteVacationById,
 } = require("../services/vacation.service");
 
 const vacationController = require("express").Router();
@@ -58,6 +59,18 @@ vacationController.put("/:vacationId", async (req, res) => {
       return res
         .status(500)
         .json({ isError: true, message: "휴가 업데이트 실패" });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+vacationController.delete("/:vacationId", async (req, res) => {
+  try {
+    const deleted = await deleteVacationById({ id: req.params.vacationId });
+    if (!deleted) {
+      return res.status(500).json({ isError: true, message: "휴가 삭제 실패" });
     }
     return res.status(204).send();
   } catch (error) {
