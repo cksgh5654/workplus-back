@@ -9,6 +9,16 @@ const createVacation = async (vacation) => {
   }
 };
 
+const findVacationById = async ({ id }) => {
+  try {
+    const document = await Vacation.findOne({ _id: id });
+    return document;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createVacation,
+  findVacationById,
 };

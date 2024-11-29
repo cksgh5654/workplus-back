@@ -1,4 +1,7 @@
-const { createVacation } = require("../services/vacation.service");
+const {
+  createVacation,
+  findVacationById,
+} = require("../services/vacation.service");
 
 const vacationController = require("express").Router();
 
@@ -19,6 +22,28 @@ vacationController.post("/", async (req, res) => {
       return res.status(500).json({ isError: true, message: "휴가 생성 실패" });
     }
     return res.status(201).json({ isError: false, message: "휴가 생성 성공" });
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+vacationController.get("/:vacationId", async (req, res) => {
+  try {
+    const { _id, requesterId, username, startDate, endDate, vacationType } =
+      await findVacationById({ id: req.params.vacationId });
+    return res.status(200).json({
+      isError: false,
+      data: {
+        vacation: {
+          id: _id,
+          requesterId,
+          username,
+          startDate,
+          endDate,
+          vacationType,
+        },
+      },
+    });
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
   }
