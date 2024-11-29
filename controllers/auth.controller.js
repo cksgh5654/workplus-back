@@ -68,7 +68,7 @@ authController.post("/send-email", async (req, res) => {
 });
 
 authController.post("/verify-email", async (req, res) => {
-  const { email, token: reqToekn } = req.body;
+  const { email, token: reqToken } = req.body;
   try {
     const userFromDB = await findUserByEmail({ email });
     if (!userFromDB) {
@@ -77,13 +77,13 @@ authController.post("/verify-email", async (req, res) => {
         .json({ isError: true, message: "유저를 찾을 수 없습니다." });
     }
 
-    if (userFromDB.token.value !== reqToekn.value) {
+    if (userFromDB.token.value !== reqToken.value) {
       return res
         .status(400)
         .json({ isError: true, message: "토큰이 일치 하지 않습니다." });
     }
 
-    if (reqToekn.expires < Date.now()) {
+    if (reqToken.expires < Date.now()) {
       return res
         .status(400)
         .json({ isError: true, message: "토큰이 만료 되었습니다." });
