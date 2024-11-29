@@ -4,9 +4,53 @@ const {
   updateVacationById,
   deleteVacationById,
   findVacationsByUserId,
+  getAllVacations,
 } = require("../services/vacation.service");
 
 const vacationController = require("express").Router();
+
+vacationController.get("/", async (_req, res) => {
+  try {
+    const documents = await getAllVacations();
+    if (!documents) {
+      return res.status(500).json({
+        isError: true,
+        message: "DB에서 데이터 가져오기를 실패 했습니다.",
+      });
+    }
+    return res
+      .status(200)
+      .json({
+        isError: false,
+        vacations: documents.map(
+          ({
+            _id: vacationId,
+            requesterId,
+            username,
+            startDate,
+            endDate,
+            vacationType,
+            reason,
+            createdAt,
+          }) => ({
+            vacationId,
+            requesterId,
+            username,
+            startDate,
+            endDate,
+            vacationType,
+            reason,
+            createdAt,
+          })
+        ),
+      });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ isError: true, message: "휴가 정보 가져오기 실패" });
+  }
+});
 
 vacationController.post("/", async (req, res) => {
   const { username, startDate, endDate, vacationType, reason, userId } =
@@ -26,6 +70,7 @@ vacationController.post("/", async (req, res) => {
     }
     return res.status(201).json({ isError: false, message: "휴가 생성 성공" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: error.message });
   }
 });

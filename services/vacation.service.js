@@ -46,10 +46,20 @@ const findVacationsByUserId = async ({ id }) => {
   }
 };
 
+const getAllVacations = async () => {
+  try {
+    const documents = await Vacation.find();
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createVacation,
   findVacationById,
   updateVacationById,
   deleteVacationById,
   findVacationsByUserId,
+  getAllVacations,
 };
