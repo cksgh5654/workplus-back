@@ -37,9 +37,19 @@ const deleteVacationById = async ({ id }) => {
   }
 };
 
+const findVacationsByUserId = async ({ id }) => {
+  try {
+    const vacations = await Vacation.find({ requesterId: id });
+    return vacations;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createVacation,
   findVacationById,
   updateVacationById,
   deleteVacationById,
+  findVacationsByUserId,
 };

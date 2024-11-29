@@ -3,6 +3,7 @@ const {
   findVacationById,
   updateVacationById,
   deleteVacationById,
+  findVacationsByUserId,
 } = require("../services/vacation.service");
 
 const vacationController = require("express").Router();
@@ -73,6 +74,36 @@ vacationController.delete("/:vacationId", async (req, res) => {
       return res.status(500).json({ isError: true, message: "휴가 삭제 실패" });
     }
     return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+vacationController.get("/user/:userId", async (req, res) => {
+  try {
+    const documents = await findVacationsByUserId({ id: req.params.userId });
+    const vacations = documents.map(
+      ({
+        _id,
+        requesterId,
+        username,
+        startDate,
+        endDate,
+        vacationType,
+        reason,
+        createdAt,
+      }) => ({
+        vacationId: _id,
+        requesterId,
+        username,
+        startDate,
+        endDate,
+        vacationType,
+        reason,
+        createdAt,
+      })
+    );
+    return res.status(200).json({ isError: false, data: { vacations } });
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
   }
