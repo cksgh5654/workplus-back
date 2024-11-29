@@ -3,7 +3,7 @@ const { String } = mongoose.Schema.Types;
 
 const MeetingSchema = new mongoose.Schema(
   {
-    creator: {
+    creatorId: {
       type: String,
       required: true,
     },
