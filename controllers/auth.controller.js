@@ -56,6 +56,7 @@ authController.post("/send-email", async (req, res) => {
     if (!user) {
       await createUser(userData);
     }
+    await updateUserByEmail(userData);
     await sendMail(email, token, expires);
     return res
       .status(200)
