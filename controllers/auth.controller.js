@@ -51,23 +51,24 @@ authController.post("/send-email", async (req, res) => {
     token: { value: token, expires },
     status: false,
   };
+
   try {
     const user = await findUserByEmail({ email });
-    if (user.status) {
+    if (!user) {
+      await createUser(userData);
+    }
+    if (user && user.status) {
       return res
         .status(400)
         .json({ isError: true, message: "이미 가입된 이메일 입니다." });
     }
-    if (!user) {
-      await createUser(userData);
-    }
-
     await updateUserByEmail(userData);
     await sendMail(email, token, expires);
     return res
       .status(200)
       .json({ isError: false, message: "success to send email" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "fail to send email" });
