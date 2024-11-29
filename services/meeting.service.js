@@ -18,4 +18,14 @@ const findMeetingById = async ({ id }) => {
   }
 };
 
-module.exports = { createMeeting, findMeetingById };
+const updateMeetingById = async (data) => {
+  const { id, ...rest } = data;
+  try {
+    const updated = await Meeting.updateOne({ _id: id }, rest);
+    return updated;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+module.exports = { createMeeting, findMeetingById, updateMeetingById };

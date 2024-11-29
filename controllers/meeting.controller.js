@@ -1,6 +1,7 @@
 const {
   createMeeting,
   findMeetingById,
+  updateMeetingById,
 } = require("../services/meeting.service");
 
 const meetingController = require("express").Router();
@@ -39,6 +40,23 @@ meetingController.get("/:meetingId", async (req, res) => {
         meeting: { meetingId, creatorId, attendant, date, startTime, agenda },
       },
     });
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+meetingController.put("/:meetingId", async (req, res) => {
+  try {
+    const updated = await updateMeetingById({
+      id: req.params.meetingId,
+      ...req.body,
+    });
+    if (!updated) {
+      return res
+        .status(500)
+        .json({ isError: true, message: "회의 업데이트 실패" });
+    }
+    return res.status(204).send();
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
   }
