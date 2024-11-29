@@ -1,6 +1,7 @@
 const {
   createVacation,
   findVacationById,
+  updateVacationById,
 } = require("../services/vacation.service");
 
 const vacationController = require("express").Router();
@@ -44,6 +45,21 @@ vacationController.get("/:vacationId", async (req, res) => {
         },
       },
     });
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+vacationController.put("/:vacationId", async (req, res) => {
+  const formData = { id: req.params.vacationId, ...req.body };
+  try {
+    const updated = await updateVacationById(formData);
+    if (!updated) {
+      return res
+        .status(500)
+        .json({ isError: true, message: "휴가 업데이트 실패" });
+    }
+    return res.status(204).send();
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
   }

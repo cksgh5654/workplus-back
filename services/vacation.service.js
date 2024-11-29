@@ -18,7 +18,18 @@ const findVacationById = async ({ id }) => {
   }
 };
 
+const updateVacationById = async (data) => {
+  const { id: _id, ...rest } = data;
+  try {
+    const document = await Vacation.updateOne({ _id }, rest);
+    return document;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createVacation,
   findVacationById,
+  updateVacationById,
 };
