@@ -36,9 +36,20 @@ const deleteMeetingById = async ({ id }) => {
     throw new Error(error);
   }
 };
+
+const findMyMeetingByUsername = async ({ username }) => {
+  try {
+    const documents = await Meeting.find({ attendant: username });
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createMeeting,
   findMeetingById,
   updateMeetingById,
   deleteMeetingById,
+  findMyMeetingByUsername,
 };
