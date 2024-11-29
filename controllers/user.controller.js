@@ -167,4 +167,22 @@ userController.post("/checkout/:userId", async (req, res) => {
   }
 });
 
+userController.get("/attendance/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "유저 아이디가 필요합니다" });
+    }
+    const { attendance } = await findUserById({ id: userId });
+    return res.json({ isError: false, attendance });
+  } catch (error) {
+    return res.json({
+      isError: true,
+      message: "fail to get info from server",
+    });
+  }
+});
+
 module.exports = userController;
