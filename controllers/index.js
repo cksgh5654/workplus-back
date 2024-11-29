@@ -1,12 +1,13 @@
+const withAuth = require("../middlewares/auth");
 const authController = require("./auth.controller");
 const meetingController = require("./meeting.controller");
 const userController = require("./user.contorller");
 const vacationController = require("./vacation.controller");
 const apiController = require("express").Router();
 
-apiController.use("/user", userController);
+apiController.use("/user", withAuth, userController);
 apiController.use("/auth", authController);
-apiController.use("/vacation", vacationController);
-apiController.use("/meeting", meetingController);
+apiController.use("/vacation", withAuth, vacationController);
+apiController.use("/meeting", withAuth, meetingController);
 
 module.exports = apiController;
