@@ -18,32 +18,30 @@ vacationController.get("/", async (_req, res) => {
         message: "DB에서 데이터 가져오기를 실패 했습니다.",
       });
     }
-    return res
-      .status(200)
-      .json({
-        isError: false,
-        vacations: documents.map(
-          ({
-            _id: vacationId,
-            requesterId,
-            username,
-            startDate,
-            endDate,
-            vacationType,
-            reason,
-            createdAt,
-          }) => ({
-            vacationId,
-            requesterId,
-            username,
-            startDate,
-            endDate,
-            vacationType,
-            reason,
-            createdAt,
-          })
-        ),
-      });
+    return res.status(200).json({
+      isError: false,
+      vacations: documents.map(
+        ({
+          _id: vacationId,
+          requesterId,
+          username,
+          startDate,
+          endDate,
+          vacationType,
+          reason,
+          createdAt,
+        }) => ({
+          vacationId,
+          requesterId,
+          username,
+          startDate,
+          endDate,
+          vacationType,
+          reason,
+          createdAt,
+        })
+      ),
+    });
   } catch (error) {
     console.log(error);
     return res
@@ -77,8 +75,15 @@ vacationController.post("/", async (req, res) => {
 
 vacationController.get("/:vacationId", async (req, res) => {
   try {
-    const { _id, requesterId, username, startDate, endDate, vacationType } =
-      await findVacationById({ id: req.params.vacationId });
+    const {
+      _id,
+      requesterId,
+      username,
+      startDate,
+      endDate,
+      vacationType,
+      reason,
+    } = await findVacationById({ id: req.params.vacationId });
     return res.status(200).json({
       isError: false,
       data: {
@@ -89,6 +94,7 @@ vacationController.get("/:vacationId", async (req, res) => {
           startDate,
           endDate,
           vacationType,
+          reason,
         },
       },
     });
