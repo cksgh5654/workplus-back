@@ -28,4 +28,17 @@ const updateMeetingById = async (data) => {
   }
 };
 
-module.exports = { createMeeting, findMeetingById, updateMeetingById };
+const deleteMeetingById = async ({ id }) => {
+  try {
+    const deleted = await Meeting.deleteOne({ _id: id });
+    return deleted;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+module.exports = {
+  createMeeting,
+  findMeetingById,
+  updateMeetingById,
+  deleteMeetingById,
+};

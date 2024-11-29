@@ -2,6 +2,7 @@ const {
   createMeeting,
   findMeetingById,
   updateMeetingById,
+  deleteMeetingById,
 } = require("../services/meeting.service");
 
 const meetingController = require("express").Router();
@@ -55,6 +56,18 @@ meetingController.put("/:meetingId", async (req, res) => {
       return res
         .status(500)
         .json({ isError: true, message: "회의 업데이트 실패" });
+    }
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: error.message });
+  }
+});
+
+meetingController.delete("/:meetingId", async (req, res) => {
+  try {
+    const deleted = await deleteMeetingById({ id: req.params.meetingId });
+    if (!deleted) {
+      return res.status(500).json({ isError: true, message: "회의 삭제 실패" });
     }
     return res.status(204).send();
   } catch (error) {
