@@ -185,14 +185,9 @@ authController.post("/signin", async (req, res) => {
   }
 });
 
-authController.get("/google-oauth", (_req, res) => {
-  const googleOauthEntryUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${googleOauthRedirectUrl}&response_type=code&scope=email profile`;
-  res.redirect(googleOauthEntryUrl);
-});
-
-authController.get("/google-oauth-redirect", async (req, res) => {
+authController.post("/google-oauth-redirect", async (req, res) => {
   try {
-    const { code } = req.query;
+    const { code } = req.body;
     const url = `https://oauth2.googleapis.com/token`;
     const requestToken = await axios.post(url, {
       code,
@@ -219,10 +214,16 @@ authController.get("/google-oauth-redirect", async (req, res) => {
       const token = jwt.sign({ email }, JWT_SECRET_KEY, {
         expiresIn: 1000 * 60 * 60,
       });
-      res.setHeader("token", token);
-      res.redirect(
-        `http://localhost:5173/login?username=${existingUser.username}&email=${existingUser.email}&id=${existingUser._id}`
-      );
+
+      return res.status(200).json({
+        isError: false,
+        user: {
+          username: existingUser.username,
+          email: existingUser.email,
+          id: existingUser._id,
+          token,
+        },
+      });
     }
   } catch (error) {
     return res.json({ isError: true, message: "Fail to signin with google" });
