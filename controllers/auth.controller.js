@@ -53,9 +53,15 @@ authController.post("/send-email", async (req, res) => {
   };
   try {
     const user = await findUserByEmail({ email });
+    if (user.status) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "이미 가입된 이메일 입니다." });
+    }
     if (!user) {
       await createUser(userData);
     }
+
     await updateUserByEmail(userData);
     await sendMail(email, token, expires);
     return res
