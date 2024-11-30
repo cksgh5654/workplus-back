@@ -185,7 +185,7 @@ authController.post("/signin", async (req, res) => {
   }
 });
 
-authController.post("/google-oauth-redirect", async (req, res) => {
+authController.post("/google-oauth", async (req, res) => {
   try {
     const { code } = req.body;
     const url = `https://oauth2.googleapis.com/token`;
@@ -205,28 +205,34 @@ authController.post("/google-oauth-redirect", async (req, res) => {
         },
       }
     );
-    if (request.status === 200) {
-      const { name: username, email, picture: userImage, id } = request.data;
-      const existingUser = await findUserByEmail({ email });
-      if (!existingUser) {
-        await createUser({ id, username, email, userImage });
-      }
-      const token = jwt.sign({ email }, JWT_SECRET_KEY, {
-        expiresIn: 1000 * 60 * 60,
-      });
-
-      return res.status(200).json({
-        isError: false,
-        user: {
-          username: existingUser.username,
-          email: existingUser.email,
-          id: existingUser._id,
-          token,
-        },
-      });
+    if (request.status !== 200) {
+      return res
+        .status(500)
+        .json({ isError: true, message: "구글 oauth erorr" });
     }
+
+    const { name: username, email, picture: userImage, id } = request.data;
+    const existingUser = await findUserByEmail({ email });
+    if (!existingUser) await createUser({ id, username, email, userImage });
+
+    const token = jwt.sign({ email }, JWT_SECRET_KEY, {
+      expiresIn: 1000 * 60 * 60,
+    });
+
+    const user = {
+      username,
+      email,
+      id: existingUser._id,
+      token,
+    };
+
+    return res.status(200).json({
+      isError: false,
+      user,
+    });
   } catch (error) {
-    return res.json({ isError: true, message: "Fail to signin with google" });
+    console.log(error);
+    return res.json({ isError: true, message: "구글로 회원가입 실패" });
   }
 });
 
