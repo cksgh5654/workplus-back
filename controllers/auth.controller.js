@@ -11,7 +11,10 @@ const {
   updateUserByEmail,
 } = require("../services/user.service");
 const crypto = require("crypto");
-const { sendMail, sendMailForPassword } = require("../utils/nodmailer.util");
+const {
+  sendMailForPassword,
+  sendMailForSignup,
+} = require("../utils/nodmailer.util");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../consts/app");
 
@@ -62,7 +65,7 @@ authController.post("/send-email", async (req, res) => {
         .json({ isError: true, message: "이미 가입된 이메일 입니다." });
     }
     await updateUserByEmail(userData);
-    await sendMail(email, token, expires);
+    await sendMailForSignup(email, token, expires);
     return res
       .status(200)
       .json({ isError: false, message: "success to send email" });
