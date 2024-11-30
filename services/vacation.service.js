@@ -21,7 +21,7 @@ const findVacationById = async ({ id }) => {
 const updateVacationById = async (data) => {
   const { id, ...rest } = data;
   try {
-    const document = await Vacation.updateOne({ _id }, rest);
+    const document = await Vacation.updateOne({ _id: id }, rest);
     return document;
   } catch (error) {
     throw new Error(error);
