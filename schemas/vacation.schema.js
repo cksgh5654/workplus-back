@@ -27,6 +27,10 @@ const vacationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    status: {
+      type: String,
+      default: "대기중",
+    },
   },
   {
     timestamps: {
