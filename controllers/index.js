@@ -1,4 +1,5 @@
 const withAuth = require("../middlewares/auth");
+const adminController = require("./admin.controller");
 const authController = require("./auth.controller");
 const meetingController = require("./meeting.controller");
 const userController = require("./user.controller");
@@ -9,5 +10,6 @@ apiController.use("/user", withAuth, userController);
 apiController.use("/auth", authController);
 apiController.use("/vacation", withAuth, vacationController);
 apiController.use("/meeting", withAuth, meetingController);
+apiController.use("/admin", withAuth, adminController);
 
 module.exports = apiController;
