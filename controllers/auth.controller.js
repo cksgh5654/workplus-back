@@ -11,7 +11,7 @@ const {
   updateUserByEmail,
 } = require("../services/user.service");
 const crypto = require("crypto");
-const { sendMail } = require("../utils/nodmailer.util");
+const { sendMail, sendMailForPassword } = require("../utils/nodmailer.util");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../consts/app");
 
@@ -67,10 +67,35 @@ authController.post("/send-email", async (req, res) => {
       .status(200)
       .json({ isError: false, message: "success to send email" });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "fail to send email" });
+  }
+});
+
+authController.post("/send-email-password", async (req, res) => {
+  const { email } = req.body;
+  const token = crypto.randomBytes(32).toString("hex");
+  const expires = Date.now() + 5 * 60 * 1000;
+  if (!email) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "이메일이 필요합니다" });
+  }
+
+  try {
+    const existingUser = await findUserByEmail({ email });
+    if (!existingUser)
+      return res
+        .status(400)
+        .json({ isError: true, message: "가입된 이메일 계정이 아닙니다." });
+
+    await updateUserByEmail({ email, token: { value: token, expires } });
+    await sendMailForPassword(email, token, expires);
+
+    return res.status(204).send();
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: "이메일 전송 실패" });
   }
 });
 
@@ -106,7 +131,6 @@ authController.post("/verify-email", async (req, res) => {
       .status(200)
       .json({ isError: false, message: "이메일 인증 성공" });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ isError: true, message: error.message });
   }
 });
