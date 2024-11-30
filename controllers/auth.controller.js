@@ -20,7 +20,6 @@ const { JWT_SECRET_KEY } = require("../consts/app");
 
 authController.patch("/password", async (req, res) => {
   const { email, password } = req.body;
-
   const hashedPassword = crypto
     .createHash("sha512")
     .update(password)
@@ -33,10 +32,20 @@ authController.patch("/password", async (req, res) => {
         .status(400)
         .json({ isError: true, message: "이메일을 확인 해주세요." });
     }
+    if (user && user.status === false) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "이메일 인증을 완료해 주세요" });
+    }
     const updated = await updateUserByEmail({
       email,
       password: hashedPassword,
     });
+    if (!updated) {
+      return res
+        .status(500)
+        .status({ isError: true, message: "비밀번호 변경 실패" });
+    }
 
     return res.status(204).send();
   } catch (error) {
@@ -93,7 +102,11 @@ authController.post("/send-email-password", async (req, res) => {
         .status(400)
         .json({ isError: true, message: "가입된 이메일 계정이 아닙니다." });
 
-    await updateUserByEmail({ email, token: { value: token, expires } });
+    await updateUserByEmail({
+      email,
+      token: { value: token, expires },
+      status: false,
+    });
     await sendMailForPassword(email, token, expires);
 
     return res.status(204).send();
