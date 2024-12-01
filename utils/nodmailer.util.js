@@ -46,7 +46,7 @@ const sendMailForSignup = async (email, token, expires) => {
 };
 
 const sendMailForPassword = async (email, token, expires) => {
-  const emailLink = `http://localhost:5173/reset-password?email=${email}&token=${token}&expires=${expires}`;
+  const emailLink = `http://localhost:5173/find-password?email=${email}&token=${token}&expires=${expires}`;
   const mailOptions = {
     from: nodemailerAuthEmail,
     to: email,
