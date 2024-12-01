@@ -250,7 +250,7 @@ authController.post("/google-oauth", async (req, res) => {
         .status(500)
         .json({ isError: true, message: "구글 oauth erorr" });
     }
-
+    console.log(request.data);
     const { name: username, email, picture: userImage, id } = request.data;
     const existingUser = await findUserByEmail({ email });
     if (!existingUser) await createUser({ id, username, email, userImage });
@@ -262,7 +262,6 @@ authController.post("/google-oauth", async (req, res) => {
     const user = {
       username,
       email,
-      id: existingUser._id,
       token,
     };
 
