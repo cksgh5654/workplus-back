@@ -38,8 +38,11 @@ const userSchema = new mongoose.Schema(
       value: { type: String },
       expires: { type: String },
     },
-    status: {
+    emailValidationStatus: {
       type: Boolean,
+    },
+    signupType: {
+      type: String,
     },
     attendance: {
       status: { type: Boolean, default: false },
