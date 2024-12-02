@@ -55,33 +55,37 @@ authController.patch("/password", async (req, res) => {
 
 authController.post("/send-email", async (req, res) => {
   const { email } = req.body;
+  if (!email) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "이메일 필요합니다." });
+  }
   const token = crypto.randomBytes(32).toString("hex");
   const expires = Date.now() + 5 * 60 * 1000;
-  const userData = {
-    email,
-    token: { value: token, expires },
-    status: false,
-  };
 
   try {
     const user = await findUserByEmail({ email });
-    if (!user) {
-      await createUser(userData);
+    if (!user) await createUser({ email });
+    else {
+      if (user.signupType) {
+        return res
+          .status(400)
+          .json({ isError: true, message: "이미 가입된 이메일 입니다." });
+      }
     }
-    if (user && user.status) {
-      return res
-        .status(400)
-        .json({ isError: true, message: "이미 가입된 이메일 입니다." });
-    }
-    await updateUserByEmail(userData);
+    await updateUserByEmail({
+      email,
+      token: { value: token, expires },
+      emailValidationStatus: false,
+    });
     await sendMailForSignup(email, token, expires);
     return res
       .status(200)
-      .json({ isError: false, message: "success to send email" });
+      .json({ isError: false, message: "이메일 보내기 성공" });
   } catch (error) {
     return res
       .status(500)
-      .json({ isError: true, message: "fail to send email" });
+      .json({ isError: true, message: "이메일 보내기 실패" });
   }
 });
 
@@ -139,7 +143,7 @@ authController.post("/verify-email", async (req, res) => {
 
     await updateUserByEmail({
       email,
-      status: true,
+      emailValidationStatus: true,
       token: { value: "", expires: "" },
     });
 
@@ -166,16 +170,26 @@ authController.post("/signup", async (req, res) => {
 
   try {
     const existingUser = await findUserByEmail({ email });
-    if (!existingUser || !existingUser.status) {
-      return res
-        .status(400)
-        .json({ isError: true, message: "이메일 인증이 필요합니다." });
+    if (existingUser) {
+      if (existingUser.signupType) {
+        return res.status(400).json({
+          isError: false,
+          message: "이미 회원가입된 이메일입니다.",
+        });
+      }
+
+      if (!existingUser.emailValidationStatus) {
+        return res
+          .status(400)
+          .json({ isError: true, message: "이메일 인증이 필요합니다." });
+      }
     }
 
     const user = await updateUserByEmail({
       email,
       username,
       password: hashedPassword,
+      signupType: "email",
     });
     if (!user) {
       return res
@@ -190,7 +204,11 @@ authController.post("/signup", async (req, res) => {
 
 authController.post("/signin", async (req, res) => {
   const { email, password } = req.body;
-
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "email, password가 필요합니다." });
+  }
   const hashedPassword = crypto
     .createHash("sha512")
     .update(password)
@@ -203,29 +221,42 @@ authController.post("/signin", async (req, res) => {
         .json({ isError: false, message: "존재 하지 않는 이메일 입니다." });
     }
 
+    if (!existingUser.password && !existingUser.username) {
+      return res
+        .status(400)
+        .json({ isError: false, message: "가입되어 있지 않은 이메일 입니다." });
+    }
+
+    if (existingUser.signupType !== "email") {
+      return res
+        .status(400)
+        .json({ isError: false, message: "잘못된 로그인 방식 입니다." });
+    }
+
     if (existingUser.password !== hashedPassword) {
       return res
         .status(400)
-        .json({ isError: false, message: "회원 정보가 잘 못되었습니다." });
+        .json({ isError: false, message: "회원 정보가 잘못되었습니다." });
     }
 
     const token = jwt.sign({ email }, JWT_SECRET_KEY, {
       expiresIn: 1000 * 60 * 60,
     });
 
-    const user = {
+    const userData = {
       email: existingUser.email,
       username: existingUser.username,
       id: existingUser._id,
+      token,
     };
     res.setHeader("token", token);
-    return res.status(200).json({ isError: false, data: { user } });
+    return res.status(200).json({ isError: false, data: { user: userData } });
   } catch (error) {
     return res.json({ isError: true, message: error.message });
   }
 });
 
-authController.post("/google-oauth", async (req, res) => {
+authController.post("/google-oauth-signin", async (req, res) => {
   try {
     const { code } = req.body;
     const url = `https://oauth2.googleapis.com/token`;
@@ -250,24 +281,97 @@ authController.post("/google-oauth", async (req, res) => {
         .status(500)
         .json({ isError: true, message: "구글 oauth erorr" });
     }
-    const { name: username, email, picture: userImage, id } = request.data;
-    const existingUser = await findUserByEmail({ email });
-    if (!existingUser) await createUser({ id, username, email, userImage });
+    const { email } = request.data;
+    const user = await findUserByEmail({ email });
+    console.log({ user });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "가입되어 있지 않은 이메일 입니다." });
+    } else {
+      if (!user.signupType) {
+        return res.status(400).json({
+          isError: true,
+          message: "가입되어 있지 않은 이메일 입니다.",
+        });
+      }
+      if (user.signupType !== "google") {
+        return res
+          .status(400)
+          .json({ isError: true, message: "잘못된 로그인 타입 입니다." });
+      }
+    }
 
     const token = jwt.sign({ email }, JWT_SECRET_KEY, {
       expiresIn: 1000 * 60 * 60,
     });
 
-    const user = {
-      username,
+    const userData = {
+      username: user.username,
       email,
       token,
+      userId: user._id,
     };
+    return res.json({ isError: false, user: userData });
+  } catch (error) {
+    console.log(error);
+    return res.json({ isError: true, message: "구글로 회원가입 실패" });
+  }
+});
 
-    return res.status(200).json({
-      isError: false,
-      user,
+authController.post("/google-oauth-signup", async (req, res) => {
+  try {
+    const { code } = req.body;
+    const url = `https://oauth2.googleapis.com/token`;
+    const requestToken = await axios.post(url, {
+      code,
+      client_id: googleClientId,
+      client_secret: googleClientSeret,
+      redirect_uri: "http://localhost:5173/signup",
+      grant_type: "authorization_code",
     });
+    const { access_token } = requestToken.data;
+    const request = await axios.get(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    if (request.status !== 200) {
+      return res
+        .status(500)
+        .json({ isError: true, message: "구글 oauth erorr" });
+    }
+    const { name: username, email, picture: userImage } = request.data;
+    const user = await findUserByEmail({ email });
+    if (user && user.signupType) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "이미 가입된 이메일 계정 입니다." });
+    }
+    if (user && !user.signupType) {
+      await updateUserByEmail({
+        username,
+        email,
+        userImage,
+        emailValidationStatus: true,
+        signupType: "google",
+      });
+      return res
+        .status(200)
+        .json({ isError: false, message: "회원 가입 완료" });
+    }
+
+    await createUser({
+      username,
+      email,
+      userImage,
+      emailValidationStatus: true,
+      signupType: "google",
+    });
+    return res.status(200).json({ isError: false, message: "회원 가입 완료" });
   } catch (error) {
     console.log(error);
     return res.json({ isError: true, message: "구글로 회원가입 실패" });
