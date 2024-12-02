@@ -2,6 +2,8 @@ const {
   googleClientId,
   googleOauthRedirectUrl,
   googleClientSeret,
+  googleOauthSignupRedirectUrl,
+  googleOauthSigninRedirectUrl,
 } = require("../consts/googleConfig");
 const authController = require("express").Router();
 const axios = require("axios");
@@ -264,7 +266,7 @@ authController.post("/google-oauth-signin", async (req, res) => {
       code,
       client_id: googleClientId,
       client_secret: googleClientSeret,
-      redirect_uri: googleOauthRedirectUrl,
+      redirect_uri: googleOauthSigninRedirectUrl,
       grant_type: "authorization_code",
     });
     const { access_token } = requestToken.data;
@@ -283,7 +285,6 @@ authController.post("/google-oauth-signin", async (req, res) => {
     }
     const { email } = request.data;
     const user = await findUserByEmail({ email });
-    console.log({ user });
     if (!user) {
       return res
         .status(400)
@@ -327,7 +328,7 @@ authController.post("/google-oauth-signup", async (req, res) => {
       code,
       client_id: googleClientId,
       client_secret: googleClientSeret,
-      redirect_uri: "http://localhost:5173/signup",
+      redirect_uri: googleOauthSignupRedirectUrl,
       grant_type: "authorization_code",
     });
     const { access_token } = requestToken.data;
