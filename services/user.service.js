@@ -27,6 +27,18 @@ const findUserByEmail = async (email) => {
   }
 };
 
+const findUsersByUsername = async (username) => {
+  try {
+    const documents = await User.find(
+      { username: { $regex: username } },
+      "username _id"
+    );
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const updateUserById = async (data) => {
   const { id, ...rest } = data;
   try {
@@ -59,4 +71,5 @@ module.exports = {
   findUserByEmail,
   updateUserById,
   updateUserByEmail,
+  findUsersByUsername,
 };

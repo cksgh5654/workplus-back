@@ -1,5 +1,9 @@
 const withAuth = require("../middlewares/auth");
-const { findUserById, updateUserById } = require("../services/user.service");
+const {
+  findUserById,
+  updateUserById,
+  findUsersByUsername,
+} = require("../services/user.service");
 const imageUploadMiddleware = require("../utils/imageUpload.util");
 
 const userController = require("express").Router();
@@ -182,6 +186,25 @@ userController.get("/attendance/:userId", async (req, res) => {
       isError: true,
       message: "fail to get info from server",
     });
+  }
+});
+
+userController.get("/search", async (req, res) => {
+  const { username } = req.query;
+  if (!username) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "유저이름이 필요합니다." });
+  }
+
+  try {
+    const users = await findUsersByUsername(username);
+    return res.status(200).json({ isError: false, users });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ isError: true, message: "유저 검색에 실패했습니다." });
   }
 });
 
