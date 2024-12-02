@@ -248,11 +248,13 @@ authController.post("/signin", async (req, res) => {
     const userData = {
       email: existingUser.email,
       username: existingUser.username,
-      id: existingUser._id,
+      userId: existingUser._id,
+      userImage: existingUser.userImage || "",
+      isAdmin: existingUser.isAdmin || false,
       token,
     };
     res.setHeader("token", token);
-    return res.status(200).json({ isError: false, data: { user: userData } });
+    return res.status(200).json({ isError: false, user: userData });
   } catch (error) {
     return res.json({ isError: true, message: error.message });
   }
@@ -311,6 +313,8 @@ authController.post("/google-oauth-signin", async (req, res) => {
       username: user.username,
       email,
       token,
+      userImage: user.userImage,
+      isAdmin: user.isAdmin || false,
       userId: user._id,
     };
     return res.json({ isError: false, user: userData });
