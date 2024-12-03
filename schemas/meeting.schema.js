@@ -7,6 +7,10 @@ const MeetingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    creatorUsername: {
+      type: String,
+      required: true,
+    },
     attendant: {
       type: [String],
       required: true,

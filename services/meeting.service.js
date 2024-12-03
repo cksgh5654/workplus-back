@@ -6,10 +6,12 @@ const createMeeting = async ({
   date,
   startTime,
   agenda,
+  username,
 }) => {
   try {
     const document = await Meeting.create({
       creatorId,
+      creatorUsername: username,
       attendant,
       date,
       startTime,
