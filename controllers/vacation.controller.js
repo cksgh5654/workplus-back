@@ -24,6 +24,7 @@ vacationController.get("/", async (_req, res) => {
           vacationType,
           reason,
           createdAt,
+          status,
         }) => ({
           vacationId,
           requesterId,
@@ -33,6 +34,7 @@ vacationController.get("/", async (_req, res) => {
           vacationType,
           reason,
           createdAt,
+          status,
         })
       ),
     });
