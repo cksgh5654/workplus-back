@@ -34,79 +34,25 @@ userController.get("/profile/:id", withAuth, async (req, res) => {
   }
 });
 
-userController.patch("/profile/username", async (req, res) => {
-  try {
-    const updated = await updateUserById({
-      id: req.body.id,
-      username: req.body.username,
-    });
-    if (!updated) {
-      return res
-        .status(404)
-        .json({ isError: false, message: "잘못된 요청 입니다." });
-    }
-    return res.status(204).send();
-  } catch (error) {
+userController.patch("/profile/:userId", async (req, res) => {
+  const { userId } = req.params;
+  if (!userId) {
     return res
-      .status(500)
-      .json({ isError: false, message: "유저 정보 업데이트 실패" });
+      .status(400)
+      .json({ isError: true, message: "유저 아이디가 필요합니다." });
   }
-});
-
-userController.patch("/profile/birth", async (req, res) => {
   try {
-    const updated = await updateUserById({
-      id: req.body.id,
-      birth: req.body.birth,
-    });
+    const updated = await updateUserById(userId, req.body);
     if (!updated) {
       return res
         .status(404)
-        .json({ isError: false, message: "잘못된 요청 입니다." });
+        .json({ isError: true, message: "잘못된 요청 입니다." });
     }
-    return res.status(204).send();
+    return res.status(200).json({ isError: false, message: "업데이트 완료" });
   } catch (error) {
     return res
       .status(500)
-      .json({ isError: false, message: "유저 정보 업데이트 실패" });
-  }
-});
-
-userController.patch("/profile/phone", async (req, res) => {
-  try {
-    const updated = await updateUserById({
-      id: req.body.id,
-      phone: req.body.phone,
-    });
-    if (!updated) {
-      return res
-        .status(404)
-        .json({ isError: false, message: "잘못된 요청 입니다." });
-    }
-    return res.status(204).send();
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ isError: false, message: "유저 정보 업데이트 실패" });
-  }
-});
-
-userController.patch("/profile/address", async (req, res) => {
-  try {
-    const updated = await updateUserById({
-      id: req.body.id,
-      address: req.body.address,
-    });
-    if (!updated) {
-      return res
-        .status(404)
-        .json({ isError: false, message: "잘못된 요청 입니다." });
-    }
-    return res.status(204).send();
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ isError: false, message: "유저 정보 업데이트 실패" });
+      .json({ isError: true, message: "유저 정보 업데이트 실패" });
   }
 });
 
@@ -118,10 +64,7 @@ userController.put(
     const fileName = req.file.filename;
     const url = `/images/${fileName}`;
     try {
-      const updated = await updateUserById({
-        id: req.params.id,
-        userImage: url,
-      });
+      const updated = await updateUserById(req.params.id, { userImage: url });
       if (!updated) {
         return res
           .status(500)
@@ -151,7 +94,7 @@ userController.post("/checkin/:userId", async (req, res) => {
       status: true,
       timestamps: now,
     };
-    const updated = await updateUserById({ id: req.params.userId, attendance });
+    const updated = await updateUserById(req.params.userId, { attendance });
     if (!updated) {
       return res.status(500).json({ isError: true, message: "출근 기록 실패" });
     }
@@ -181,7 +124,7 @@ userController.post("/checkout/:userId", async (req, res) => {
       status: false,
       timestamps: now,
     };
-    const updated = await updateUserById({ id: req.params.userId, attendance });
+    const updated = await updateUserById(req.params.userId, { attendance });
     if (!updated) {
       return res.status(500).json({ isError: true, message: "퇴근 기록 실패" });
     }

@@ -42,10 +42,9 @@ const findUsersByUsername = async (username) => {
   }
 };
 
-const updateUserById = async (data) => {
-  const { id, ...rest } = data;
+const updateUserById = async (id, data) => {
   try {
-    const updated = await User.findByIdAndUpdate(id, rest);
+    const updated = await User.findByIdAndUpdate(id, data);
     if (!updated) {
       return null;
     }
