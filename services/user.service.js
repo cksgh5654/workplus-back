@@ -22,6 +22,7 @@ const findUserById = async (id) => {
 const findUserByEmail = async (email) => {
   try {
     const document = await User.findOne(email).lean();
+    if (document === null) return null;
     return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
     throw new Error(error);
@@ -43,7 +44,7 @@ const findUsersByUsername = async (username) => {
 const updateUserById = async (data) => {
   const { id, ...rest } = data;
   try {
-    const updated = await User.updateOne({ _id: id }, rest);
+    const updated = await User.findByIdAndUpdate(id, rest);
     if (!updated) {
       return null;
     }
