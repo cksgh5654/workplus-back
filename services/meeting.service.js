@@ -9,35 +9,47 @@ const createMeeting = async (data) => {
   }
 };
 
-const findMeetingById = async ({ id }) => {
+const findMeetingById = async (id) => {
   try {
-    const document = await Meeting.findOne({ _id: id });
+    const document = await Meeting.findById(id);
     return document;
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const updateMeetingById = async (data) => {
-  const { id, ...rest } = data;
+const updateMeetingById = async ({
+  id,
+  creatorId,
+  data,
+  startTime,
+  agenda,
+  attendant,
+}) => {
   try {
-    const updated = await Meeting.updateOne({ _id: id }, rest);
+    const updated = await Meeting.findByIdAndUpdate(id, {
+      creatorId,
+      data,
+      startTime,
+      agenda,
+      attendant,
+    });
     return updated;
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const deleteMeetingById = async ({ id }) => {
+const deleteMeetingById = async (id) => {
   try {
-    const deleted = await Meeting.deleteOne({ _id: id });
+    const deleted = await Meeting.findByIdAndDelete(id);
     return deleted;
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const findMyMeetingByUsername = async ({ username }) => {
+const findMyMeetingByUsername = async (username) => {
   try {
     const documents = await Meeting.find({ attendant: username });
     return documents;

@@ -9,7 +9,7 @@ const {
 
 const meetingController = require("express").Router();
 
-meetingController.get("/", async (req, res) => {
+meetingController.get("/", async (_req, res) => {
   try {
     const documents = await getAllMeetings();
     const meetings = documents.map(
@@ -41,11 +41,8 @@ meetingController.get("/", async (req, res) => {
 
 meetingController.post("/", async (req, res) => {
   try {
-    const document = await createMeeting(req.body);
-    if (!document) {
-      return res.status(500).json({ isError: true, message: "회의 생성 실패" });
-    }
-    return res.status(204).send();
+    const _document = await createMeeting(req.body);
+    return res.status(201).send();
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
   }
@@ -53,12 +50,7 @@ meetingController.post("/", async (req, res) => {
 
 meetingController.get("/:meetingId", async (req, res) => {
   try {
-    const document = await findMeetingById({ id: req.params.meetingId });
-    if (!document) {
-      return res
-        .status(500)
-        .json({ isError: true, message: "회의를 찾을 수 없습니다." });
-    }
+    const document = await findMeetingById(req.params.meetingId);
     const {
       _id: meetingId,
       creatorId,
@@ -80,15 +72,10 @@ meetingController.get("/:meetingId", async (req, res) => {
 
 meetingController.put("/:meetingId", async (req, res) => {
   try {
-    const updated = await updateMeetingById({
+    const _updated = await updateMeetingById({
       id: req.params.meetingId,
       ...req.body,
     });
-    if (!updated) {
-      return res
-        .status(500)
-        .json({ isError: true, message: "회의 업데이트 실패" });
-    }
     return res.status(204).send();
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
@@ -97,10 +84,7 @@ meetingController.put("/:meetingId", async (req, res) => {
 
 meetingController.delete("/:meetingId", async (req, res) => {
   try {
-    const deleted = await deleteMeetingById({ id: req.params.meetingId });
-    if (!deleted) {
-      return res.status(500).json({ isError: true, message: "회의 삭제 실패" });
-    }
+    const _deleted = await deleteMeetingById(req.params.meetingId);
     return res.status(204).send();
   } catch (error) {
     return res.status(500).json({ isError: true, message: error.message });
@@ -109,9 +93,7 @@ meetingController.delete("/:meetingId", async (req, res) => {
 
 meetingController.get("/user/:username", async (req, res) => {
   try {
-    const documents = await findMyMeetingByUsername({
-      username: req.params.username,
-    });
+    const documents = await findMyMeetingByUsername(req.params.username);
     const meetings = documents.map(
       ({
         _id: meetingId,
