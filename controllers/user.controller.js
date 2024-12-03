@@ -69,58 +69,37 @@ userController.get("/search", async (req, res) => {
   }
 });
 
-userController.post("/checkin/:userId", async (req, res) => {
-  try {
-    const document = await findUserById(req.params.userId);
-    if (document.attendance.status) {
-      return res
-        .status(400)
-        .json({ isError: true, messsage: "이미 출근 상태 입니다." });
-    }
-    const now = new Date();
-    const attendance = {
-      status: true,
-      timestamps: now,
-    };
-    const updated = await updateUserById(req.params.userId, { attendance });
-    if (!updated) {
-      return res.status(500).json({ isError: true, message: "출근 기록 실패" });
-    }
-    return res.status(200).json({ isError: false, data: { attendance } });
-  } catch (error) {
+userController.patch("/:userId/attendance", async (req, res) => {
+  const { status } = req.body;
+  const { userId } = req.params;
+  if (!userId) {
     return res
-      .status(500)
-      .json({ isError: true, message: "출근 기록 업데이트 실패" });
+      .status(400)
+      .json({ isError: true, message: "유저 정보가 필요합니다" });
   }
-});
-
-userController.post("/checkout/:userId", async (req, res) => {
+  if (status === null || status === undefined) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "근태 상태가 필요합니다." });
+  }
+  const attendance = {
+    status,
+    timestamps: new Date(),
+  };
   try {
-    const document = await findUserById(req.params.userId);
-    if (!document) {
-      return res
-        .status(400)
-        .json({ isError: true, message: "잘못된 유저 정보 요청입니다." });
-    }
-    if (!document.attendance.status) {
-      return res
-        .status(400)
-        .json({ isError: true, messsage: "이미 퇴근 상태 입니다." });
-    }
-    const now = new Date();
-    const attendance = {
-      status: false,
-      timestamps: now,
-    };
-    const updated = await updateUserById(req.params.userId, { attendance });
+    const updated = await updateUserById(userId, {
+      attendance,
+    });
     if (!updated) {
-      return res.status(500).json({ isError: true, message: "퇴근 기록 실패" });
+      return res
+        .status(400)
+        .json({ isError: true, message: "잘못된 정보 요청 입니다." });
     }
-    return res.status(200).json({ isError: false, data: { attendance } });
+    return res.status(200).json({ isError: false, attendance });
   } catch (error) {
     return res
       .status(500)
-      .json({ isError: true, message: "출근 기록 업데이트 실패" });
+      .json({ isError: true, message: "유저 정보 업데이트 실패" });
   }
 });
 
