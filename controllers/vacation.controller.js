@@ -63,9 +63,7 @@ vacationController.post("/", async (req, res) => {
       reason,
       requesterId: userId,
     });
-    if (!vacation) {
-      return res.status(500).json({ isError: true, message: "휴가 생성 실패" });
-    }
+
     return res.status(201).json({ isError: false, message: "휴가 생성 성공" });
   } catch (error) {
     console.log(error);

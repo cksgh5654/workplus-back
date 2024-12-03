@@ -1,8 +1,22 @@
 const Vacation = require("../schemas/vacation.schema");
 
-const createVacation = async (vacation) => {
+const createVacation = async ({
+  username,
+  startDate,
+  endDate,
+  vacationType,
+  reason,
+  requesterId,
+}) => {
   try {
-    const document = await Vacation.create(vacation);
+    const document = await Vacation.create({
+      username,
+      startDate,
+      endDate,
+      vacationType,
+      reason,
+      requesterId,
+    });
     return document;
   } catch (error) {
     throw new Error(error);
