@@ -1,8 +1,20 @@
 const Meeting = require("../schemas/meeting.schema");
 
-const createMeeting = async (data) => {
+const createMeeting = async ({
+  creatorId,
+  attendant,
+  date,
+  startTime,
+  agenda,
+}) => {
   try {
-    const document = await Meeting.create(data);
+    const document = await Meeting.create({
+      creatorId,
+      attendant,
+      date,
+      startTime,
+      agenda,
+    });
     return document;
   } catch (error) {
     throw new Error(error);
