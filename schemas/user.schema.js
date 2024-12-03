@@ -43,6 +43,7 @@ const userSchema = new mongoose.Schema(
     },
     signupType: {
       type: String,
+      enum: ["email", "google"],
     },
     attendance: {
       status: { type: Boolean, default: false },
