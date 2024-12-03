@@ -23,9 +23,9 @@ const createVacation = async ({
   }
 };
 
-const findVacationById = async ({ id }) => {
+const findVacationById = async (id) => {
   try {
-    const document = await Vacation.findOne({ _id: id });
+    const document = await Vacation.findById(id);
     return document;
   } catch (error) {
     throw new Error(error);
@@ -35,25 +35,25 @@ const findVacationById = async ({ id }) => {
 const updateVacationById = async (data) => {
   const { id, ...rest } = data;
   try {
-    const document = await Vacation.updateOne({ _id: id }, rest);
+    const document = await Vacation.findByIdAndUpdate(id, rest);
     return document;
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const deleteVacationById = async ({ id }) => {
+const deleteVacationById = async (id) => {
   try {
-    const result = await Vacation.deleteOne({ _id: id });
+    const result = await Vacation.findByIdAndDelete(id);
     return result;
   } catch (error) {
     throw new Error(error);
   }
 };
 
-const findVacationsByUserId = async ({ id }) => {
+const findVacationsByUserId = async (requesterId) => {
   try {
-    const vacations = await Vacation.find({ requesterId: id });
+    const vacations = await Vacation.find({ requesterId });
     return vacations;
   } catch (error) {
     throw new Error(error);

@@ -98,7 +98,7 @@ meetingController.delete("/:meetingId", async (req, res) => {
     const _deleted = await deleteMeetingById(req.params.meetingId);
     return res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    return res.status(500).json({ isError: true, message: "회의 삭제 실패" });
   }
 });
 
@@ -135,7 +135,9 @@ meetingController.get("/user/:username", async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: true, message: "회의 데이터 가져오기 실패" });
   }
 });
 

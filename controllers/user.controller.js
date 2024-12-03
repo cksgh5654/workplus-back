@@ -28,7 +28,9 @@ userController.get("/profile/:id", withAuth, async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: true, message: "프로필 데이터 가져오기 실패" });
   }
 });
 
@@ -39,11 +41,15 @@ userController.patch("/profile/username", async (req, res) => {
       username: req.body.username,
     });
     if (!updated) {
-      return res.status(500).json({ isError: false, message: "업데이트 실패" });
+      return res
+        .status(404)
+        .json({ isError: false, message: "잘못된 요청 입니다." });
     }
     return res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ isError: false, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: false, message: "유저 정보 업데이트 실패" });
   }
 });
 
@@ -54,11 +60,15 @@ userController.patch("/profile/birth", async (req, res) => {
       birth: req.body.birth,
     });
     if (!updated) {
-      return res.status(500).json({ isError: false, message: "업데이트 실패" });
+      return res
+        .status(404)
+        .json({ isError: false, message: "잘못된 요청 입니다." });
     }
     return res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ isError: false, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: false, message: "유저 정보 업데이트 실패" });
   }
 });
 
@@ -69,11 +79,15 @@ userController.patch("/profile/phone", async (req, res) => {
       phone: req.body.phone,
     });
     if (!updated) {
-      return res.status(500).json({ isError: false, message: "업데이트 실패" });
+      return res
+        .status(404)
+        .json({ isError: false, message: "잘못된 요청 입니다." });
     }
     return res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ isError: false, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: false, message: "유저 정보 업데이트 실패" });
   }
 });
 
@@ -84,11 +98,15 @@ userController.patch("/profile/address", async (req, res) => {
       address: req.body.address,
     });
     if (!updated) {
-      return res.status(500).json({ isError: false, message: "업데이트 실패" });
+      return res
+        .status(404)
+        .json({ isError: false, message: "잘못된 요청 입니다." });
     }
     return res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ isError: false, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: false, message: "유저 정보 업데이트 실패" });
   }
 });
 
@@ -113,7 +131,9 @@ userController.put(
         .status(200)
         .json({ isError: false, data: { imgUrl: `${BASE_URL}/${url}` } });
     } catch (error) {
-      return res.status(500).json({ isError: false, message: error.message });
+      return res
+        .status(500)
+        .json({ isError: false, message: "유저 프로필 변경 실패" });
     }
   }
 );
@@ -137,7 +157,9 @@ userController.post("/checkin/:userId", async (req, res) => {
     }
     return res.status(200).json({ isError: false, data: { attendance } });
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: true, message: "출근 기록 업데이트 실패" });
   }
 });
 
@@ -165,7 +187,9 @@ userController.post("/checkout/:userId", async (req, res) => {
     }
     return res.status(200).json({ isError: false, data: { attendance } });
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: true, message: "출근 기록 업데이트 실패" });
   }
 });
 
