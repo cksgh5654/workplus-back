@@ -85,6 +85,7 @@ authController.post("/send-email", async (req, res) => {
       .status(200)
       .json({ isError: false, message: "이메일 보내기 성공" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "이메일 보내기 실패" });
@@ -249,11 +250,11 @@ authController.post("/signin", async (req, res) => {
       email: existingUser.email,
       username: existingUser.username,
       userId: existingUser._id,
-      userImage: existingUser.userImage || "",
-      isAdmin: existingUser.isAdmin || false,
+      userImage: existingUser.userImage,
+      isAdmin: existingUser.isAdmin,
       token,
     };
-    res.setHeader("token", token);
+
     return res.status(200).json({ isError: false, user: userData });
   } catch (error) {
     return res.json({ isError: true, message: error.message });
@@ -319,8 +320,7 @@ authController.post("/google-oauth-signin", async (req, res) => {
     };
     return res.json({ isError: false, user: userData });
   } catch (error) {
-    console.log(error);
-    return res.json({ isError: true, message: "구글로 회원가입 실패" });
+    return res.json({ isError: true, message: "구글로 로그인 실패" });
   }
 });
 
