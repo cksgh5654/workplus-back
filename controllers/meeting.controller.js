@@ -52,20 +52,31 @@ meetingController.get("/:meetingId", async (req, res) => {
   try {
     const document = await findMeetingById(req.params.meetingId);
     const {
-      _id: meetingId,
+      _id,
       creatorId,
+      creatorUsername,
       attendant,
       date,
       startTime,
       agenda,
     } = document;
+
     return res.status(200).json({
       isError: false,
       data: {
-        meeting: { meetingId, creatorId, attendant, date, startTime, agenda },
+        meeting: {
+          meetingId: _id,
+          creatorUsername,
+          creatorId,
+          attendant,
+          date,
+          startTime,
+          agenda,
+        },
       },
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: error.message });
   }
 });

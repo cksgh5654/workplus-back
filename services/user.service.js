@@ -13,6 +13,7 @@ const createUser = (userData) => {
 const findUserById = async (id) => {
   try {
     const document = await User.findById(id).lean();
+    if (document === null) return null;
     return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
     throw new Error(error);
