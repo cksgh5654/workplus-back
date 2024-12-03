@@ -1,11 +1,8 @@
-const {
-  findVacationById,
-  updateVacationById,
-} = require("../services/vacation.service");
+const { updateVacationById } = require("../services/vacation.service");
 
 const adminController = require("express").Router();
 
-adminController.put("/vacation/:vacationId/confirm", async (req, res) => {
+adminController.patch("/vacation/:vacationId/confirm", async (req, res) => {
   try {
     const updated = await updateVacationById({
       id: req.params.vacationId,
@@ -21,12 +18,12 @@ adminController.put("/vacation/:vacationId/confirm", async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       isError: false,
-      message: error.message || "휴가 상태 업데이트 실패",
+      message: "휴가 상태 업데이트 실패",
     });
   }
 });
 
-adminController.put("/vacation/:vacationId/refuse", async (req, res) => {
+adminController.patch("/vacation/:vacationId/refuse", async (req, res) => {
   try {
     const updated = await updateVacationById({
       id: req.params.vacationId,
@@ -41,7 +38,7 @@ adminController.put("/vacation/:vacationId/refuse", async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       isError: false,
-      message: error.message || "휴가 상태 업데이트 실패",
+      message: "휴가 상태 업데이트 실패",
     });
   }
 });
