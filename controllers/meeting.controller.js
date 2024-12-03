@@ -115,8 +115,10 @@ meetingController.get("/user/:username", async (req, res) => {
         agenda,
         createdAt,
         updatedAt,
+        creatorUsername,
       }) => ({
         meetingId,
+        creatorUsername,
         creatorId,
         attendant,
         date,
