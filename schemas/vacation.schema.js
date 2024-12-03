@@ -21,6 +21,7 @@ const vacationSchema = new mongoose.Schema(
     },
     vacationType: {
       type: String,
+      enum: ["연차", "반차"],
       required: true,
     },
     reason: {
@@ -29,6 +30,7 @@ const vacationSchema = new mongoose.Schema(
     },
     status: {
       type: String,
+      enum: ["대기중", "승인", "거부"],
       default: "대기중",
     },
   },
