@@ -12,11 +12,6 @@ const userController = require("express").Router();
 userController.get("/profile/:id", withAuth, async (req, res) => {
   try {
     const userInfo = await findUserById(req.params.id);
-    if (!userInfo) {
-      return res
-        .status(404)
-        .json({ isError: true, message: "유저를 찾을 수 없습니다." });
-    }
     const {
       _id: id,
       email,
@@ -131,7 +126,7 @@ userController.post("/checkin/:userId", async (req, res) => {
         .status(400)
         .json({ isError: true, messsage: "이미 출근 상태 입니다." });
     }
-    const now = Date.now();
+    const now = new Date();
     const attendance = {
       status: true,
       timestamps: now,
@@ -159,7 +154,7 @@ userController.post("/checkout/:userId", async (req, res) => {
         .status(400)
         .json({ isError: true, messsage: "이미 퇴근 상태 입니다." });
     }
-    const now = Date.now();
+    const now = new Date();
     const attendance = {
       status: false,
       timestamps: now,
@@ -175,14 +170,13 @@ userController.post("/checkout/:userId", async (req, res) => {
 });
 
 userController.get("/attendance/:userId", async (req, res) => {
-  const userId = req.params.userId;
   try {
-    if (!userId) {
+    if (!req.params.userId) {
       return res
         .status(400)
         .json({ isError: true, message: "유저 아이디가 필요합니다" });
     }
-    const { attendance } = await findUserById(userId);
+    const { attendance } = await findUserById(req.params.userId);
     return res.json({ isError: false, attendance });
   } catch (error) {
     return res.json({
@@ -204,7 +198,6 @@ userController.get("/search", async (req, res) => {
     const users = await findUsersByUsername(username);
     return res.status(200).json({ isError: false, users });
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "유저 검색에 실패했습니다." });
