@@ -1,3 +1,4 @@
+const { FRONT_END_POINT } = require("../consts/app");
 const {
   nodemailerAuthEmail,
   nodemailerAuthPass,
@@ -13,7 +14,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendMailForSignup = async (email, token, expires) => {
-  const emailLink = `http://localhost:5173/signup?email=${email}&token=${token}&expires=${expires}`;
+  const emailLink = `${FRONT_END_POINT}/signup?email=${email}&token=${token}&expires=${expires}`;
   const mailOptions = {
     from: nodemailerAuthEmail,
     to: email,
@@ -46,7 +47,7 @@ const sendMailForSignup = async (email, token, expires) => {
 };
 
 const sendMailForPassword = async (email, token, expires) => {
-  const emailLink = `http://localhost:5173/find-password?email=${email}&token=${token}&expires=${expires}`;
+  const emailLink = `${FRONT_END_POINT}/find-password?email=${email}&token=${token}&expires=${expires}`;
   const mailOptions = {
     from: nodemailerAuthEmail,
     to: email,

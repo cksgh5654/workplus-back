@@ -1,3 +1,4 @@
+const { BASE_URL } = require("../consts/app");
 const withAuth = require("../middlewares/auth");
 const {
   findUserById,
@@ -10,7 +11,7 @@ const userController = require("express").Router();
 
 userController.get("/profile/:id", withAuth, async (req, res) => {
   try {
-    const userInfo = await findUserById({ id: req.params.id });
+    const userInfo = await findUserById(req.params.id);
     if (!userInfo) {
       return res
         .status(404)
@@ -102,7 +103,7 @@ userController.put(
   imageUploadMiddleware,
   async (req, res) => {
     const fileName = req.file.filename;
-    const url = `http://localhost:8080/images/${fileName}`;
+    const url = `/images/${fileName}`;
     try {
       const updated = await updateUserById({
         id: req.params.id,
@@ -113,7 +114,9 @@ userController.put(
           .status(500)
           .json({ isError: true, message: "업데이트 실패" });
       }
-      return res.status(200).json({ isError: false, data: { imgUrl: url } });
+      return res
+        .status(200)
+        .json({ isError: false, data: { imgUrl: `${BASE_URL}/${url}` } });
     } catch (error) {
       return res.status(500).json({ isError: false, message: error.message });
     }
@@ -122,7 +125,7 @@ userController.put(
 
 userController.post("/checkin/:userId", async (req, res) => {
   try {
-    const document = await findUserById({ id: req.params.userId });
+    const document = await findUserById(req.params.userId);
     if (document.attendance.status) {
       return res
         .status(400)
@@ -145,7 +148,7 @@ userController.post("/checkin/:userId", async (req, res) => {
 
 userController.post("/checkout/:userId", async (req, res) => {
   try {
-    const document = await findUserById({ id: req.params.userId });
+    const document = await findUserById(req.params.userId);
     if (!document) {
       return res
         .status(400)
@@ -179,7 +182,7 @@ userController.get("/attendance/:userId", async (req, res) => {
         .status(400)
         .json({ isError: true, message: "유저 아이디가 필요합니다" });
     }
-    const { attendance } = await findUserById({ id: userId });
+    const { attendance } = await findUserById(userId);
     return res.json({ isError: false, attendance });
   } catch (error) {
     return res.json({

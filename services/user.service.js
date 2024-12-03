@@ -1,4 +1,5 @@
 const User = require("../schemas/user.schema");
+const { processImageUrl } = require("../utils/utils");
 
 const createUser = (userData) => {
   try {
@@ -9,10 +10,10 @@ const createUser = (userData) => {
   }
 };
 
-const findUserById = async ({ id }) => {
+const findUserById = async (id) => {
   try {
-    const document = await User.findOne({ _id: id });
-    return document;
+    const document = await User.findById(id).lean();
+    return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
     throw new Error(error);
   }
@@ -20,8 +21,8 @@ const findUserById = async ({ id }) => {
 
 const findUserByEmail = async (email) => {
   try {
-    const document = await User.findOne(email);
-    return document;
+    const document = await User.findOne(email).lean();
+    return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
     throw new Error(error);
   }
