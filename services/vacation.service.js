@@ -19,7 +19,7 @@ const createVacation = async ({
     });
     return document;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB createVacation] 에러", { cause: error });
   }
 };
 
@@ -28,7 +28,7 @@ const findVacationById = async (id) => {
     const document = await Vacation.findById(id);
     return document;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findVacationById] 에러", { cause: error });
   }
 };
 
@@ -38,7 +38,7 @@ const updateVacationById = async (data) => {
     const document = await Vacation.findByIdAndUpdate(id, rest);
     return document;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB updateVacationById] 에러", { cause: error });
   }
 };
 
@@ -47,7 +47,7 @@ const deleteVacationById = async (id) => {
     const result = await Vacation.findByIdAndDelete(id);
     return result;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB deleteVacationById] 에러", { cause: error });
   }
 };
 
@@ -56,7 +56,7 @@ const findVacationsByUserId = async (requesterId) => {
     const vacations = await Vacation.find({ requesterId });
     return vacations;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findVacationsByUserId] 에러", { cause: error });
   }
 };
 
@@ -68,7 +68,7 @@ const findVacationsByDate = async (startDate, endDate) => {
     });
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findVacationsByDate] 에러", { cause: error });
   }
 };
 
@@ -77,7 +77,7 @@ const getAllVacations = async () => {
     const documents = await Vacation.find();
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB getAllVacations] 에러", { cause: error });
   }
 };
 

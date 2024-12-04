@@ -19,7 +19,7 @@ const createMeeting = async ({
     });
     return document;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB createMeeting] 에러", { cause: error });
   }
 };
 
@@ -28,7 +28,7 @@ const findMeetingById = async (id) => {
     const document = await Meeting.findById(id);
     return document;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findMeetingById] 에러", { cause: error });
   }
 };
 
@@ -50,7 +50,7 @@ const updateMeetingById = async ({
     });
     return updated;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB updateMeetingById] 에러", { cause: error });
   }
 };
 
@@ -59,7 +59,7 @@ const deleteMeetingById = async (id) => {
     const deleted = await Meeting.findByIdAndDelete(id);
     return deleted;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB deleteMeetingById] 에러", { cause: error });
   }
 };
 
@@ -68,7 +68,7 @@ const findMyMeetingByUsername = async (username) => {
     const documents = await Meeting.find({ attendant: username });
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findMyMeetingByUsername] 에러", { cause: error });
   }
 };
 
@@ -79,7 +79,7 @@ const findMeetingByDate = async (startDate, endDate) => {
     });
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findMeetingByDate] 에러", { cause: error });
   }
 };
 
@@ -88,7 +88,7 @@ const getAllMeetings = async () => {
     const documents = await Meeting.find();
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB getAllMeetings] 에러", { cause: error });
   }
 };
 

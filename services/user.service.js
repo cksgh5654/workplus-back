@@ -6,7 +6,7 @@ const createUser = (userData) => {
     const document = User.create(userData);
     return document;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB createUser] 에러", { cause: error });
   }
 };
 
@@ -16,7 +16,7 @@ const findUserById = async (id) => {
     if (document === null) return null;
     return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findUserById] 에러", { cause: error });
   }
 };
 
@@ -26,7 +26,7 @@ const findUserByEmail = async (email) => {
     if (document === null) return null;
     return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findUserByEmail] 에러", { cause: error });
   }
 };
 
@@ -38,7 +38,7 @@ const findUsersByUsername = async (username) => {
     );
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB findUsersByUsername] 에러", { cause: error });
   }
 };
 
@@ -50,7 +50,7 @@ const getUsersAttendance = async () => {
     ).lean();
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB getUsersAttendance] 에러", { cause: error });
   }
 };
 
@@ -62,7 +62,7 @@ const getUsers = async () => {
     ).lean();
     return documents;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB getUsers] 에러", { cause: error });
   }
 };
 
@@ -74,7 +74,7 @@ const updateUserById = async (id, data) => {
     }
     return updated;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB updateUserById] 에러", { cause: error });
   }
 };
 
@@ -87,7 +87,7 @@ const updateUserByEmail = async (data) => {
     }
     return updated;
   } catch (error) {
-    throw new Error(error);
+    throw new Error("[DB updateUserByEmail] 에러", { cause: error });
   }
 };
 

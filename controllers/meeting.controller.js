@@ -133,11 +133,20 @@ meetingController.get("/date/:date", async (req, res) => {
 });
 
 meetingController.post("/", async (req, res) => {
+  const { creatorId, attendant, date, startTime, agenda, username } = req.body;
+  if (!creatorId || !attendant || !date || !startTime || !agenda || !username) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "유저 정보가 부족합니다." });
+  }
   try {
     const _document = await createMeeting(req.body);
     return res.status(201).send();
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    console.log(error);
+    return res
+      .status(500)
+      .json({ isError: true, message: "회의 생성중 문제가 발생했습니다." });
   }
 });
 
