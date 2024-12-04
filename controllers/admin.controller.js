@@ -1,3 +1,4 @@
+const { getUsers, getUsersAttendance } = require("../services/user.service");
 const { updateVacationById } = require("../services/vacation.service");
 
 const adminController = require("express").Router();
@@ -30,6 +31,28 @@ adminController.patch("/vacation/:vacationId/status", async (req, res) => {
       isError: false,
       message: "휴가 상태 업데이트 실패",
     });
+  }
+});
+
+adminController.get("/users", async (_req, res) => {
+  try {
+    const documents = await getUsers();
+    return res.status(200).json({ isError: false, users: documents });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ isError: true, message: "유저 정보 가져오기 실패" });
+  }
+});
+
+adminController.get("/users/attendance", async (_req, res) => {
+  try {
+    const documents = await getUsersAttendance();
+    return res.status(200).json({ isError: false, users: documents });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ isError: true, message: "유저 정보 가져오기 실패" });
   }
 });
 

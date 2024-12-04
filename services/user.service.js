@@ -42,6 +42,30 @@ const findUsersByUsername = async (username) => {
   }
 };
 
+const getUsersAttendance = async () => {
+  try {
+    const documents = await User.find(
+      { isAdmin: false },
+      "username userImage attendance"
+    ).lean();
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+const getUsers = async () => {
+  try {
+    const documents = await User.find(
+      { isAdmin: false },
+      "-updatedAt -__v"
+    ).lean();
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const updateUserById = async (id, data) => {
   try {
     const updated = await User.findByIdAndUpdate(id, data);
@@ -74,4 +98,6 @@ module.exports = {
   updateUserById,
   updateUserByEmail,
   findUsersByUsername,
+  getUsersAttendance,
+  getUsers,
 };
