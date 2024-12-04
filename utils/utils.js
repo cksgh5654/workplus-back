@@ -1,4 +1,5 @@
-const { BASE_URL } = require("../consts/app");
+const bcrypt = require("bcrypt");
+const { BASE_URL, SALT_ROUNDS } = require("../consts/app");
 
 const processImageUrl = (url) => {
   if (!url.length) {
@@ -15,7 +16,18 @@ const processDateToISODate = (date) => {
   };
 };
 
+const createHashedPassword = (password) => {
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  return hashedPassword;
+};
+
+const comparePassword = (password, hashedPassword) => {
+  return bcrypt.compareSync(password, hashedPassword);
+};
+
 module.exports = {
   processImageUrl,
   processDateToISODate,
+  createHashedPassword,
+  comparePassword,
 };

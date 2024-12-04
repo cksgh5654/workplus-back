@@ -1,6 +1,5 @@
 const {
   googleClientId,
-  googleOauthRedirectUrl,
   googleClientSeret,
   googleOauthSignupRedirectUrl,
   googleOauthSigninRedirectUrl,
@@ -19,14 +18,11 @@ const {
 } = require("../utils/nodmailer.util");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../consts/app");
+const { createHashedPassword, comparePassword } = require("../utils/utils");
 
 authController.patch("/password", async (req, res) => {
   const { email, password } = req.body;
-  const hashedPassword = crypto
-    .createHash("sha512")
-    .update(password)
-    .digest("base64");
-
+  const hashedPassword = createHashedPassword(password);
   try {
     const user = await findUserByEmail({ email });
     if (!user) {
@@ -165,11 +161,7 @@ authController.post("/signup", async (req, res) => {
       .status(400)
       .json({ isError: true, message: "유저 정보를 확인해주세요." });
   }
-
-  const hashedPassword = crypto
-    .createHash("sha512")
-    .update(password)
-    .digest("base64");
+  const hashedPassword = createHashedPassword(password);
 
   try {
     const existingUser = await findUserByEmail({ email });
@@ -212,10 +204,7 @@ authController.post("/signin", async (req, res) => {
       .status(400)
       .json({ isError: true, message: "email, password가 필요합니다." });
   }
-  const hashedPassword = crypto
-    .createHash("sha512")
-    .update(password)
-    .digest("base64");
+
   try {
     const existingUser = await findUserByEmail({ email });
     if (!existingUser) {
@@ -236,7 +225,7 @@ authController.post("/signin", async (req, res) => {
         .json({ isError: false, message: "잘못된 로그인 방식 입니다." });
     }
 
-    if (existingUser.password !== hashedPassword) {
+    if (!comparePassword(password, existingUser.password)) {
       return res
         .status(400)
         .json({ isError: false, message: "회원 정보가 잘못되었습니다." });
