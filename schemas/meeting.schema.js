@@ -1,5 +1,5 @@
 const mongoose = require("../db_init");
-const { String } = mongoose.Schema.Types;
+const { String, Date } = mongoose.Schema.Types;
 
 const MeetingSchema = new mongoose.Schema(
   {
@@ -16,7 +16,7 @@ const MeetingSchema = new mongoose.Schema(
       required: true,
     },
     date: {
-      type: String,
+      type: Date,
       required: true,
     },
     startTime: {

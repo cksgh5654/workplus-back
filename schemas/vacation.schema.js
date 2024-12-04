@@ -1,5 +1,5 @@
 const mongoose = require("../db_init");
-const { String } = mongoose.Schema.Types;
+const { String, Date } = mongoose.Schema.Types;
 
 const vacationSchema = new mongoose.Schema(
   {
@@ -12,11 +12,11 @@ const vacationSchema = new mongoose.Schema(
       required: true,
     },
     startDate: {
-      type: String,
+      type: Date,
       required: true,
     },
     endDate: {
-      type: String,
+      type: Date,
       required: true,
     },
     vacationType: {
