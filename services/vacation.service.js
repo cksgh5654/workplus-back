@@ -60,6 +60,18 @@ const findVacationsByUserId = async (requesterId) => {
   }
 };
 
+const findVacationsByDate = async (startDate, endDate) => {
+  try {
+    const documents = await Vacation.find({
+      startDate: { $lte: endDate },
+      endDate: { $gte: startDate },
+    });
+    return documents;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 const getAllVacations = async () => {
   try {
     const documents = await Vacation.find();
@@ -76,4 +88,5 @@ module.exports = {
   deleteVacationById,
   findVacationsByUserId,
   getAllVacations,
+  findVacationsByDate,
 };
