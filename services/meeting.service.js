@@ -35,7 +35,7 @@ const findMeetingById = async (id) => {
 const updateMeetingById = async ({
   id,
   creatorId,
-  data,
+  date,
   startTime,
   agenda,
   attendant,
@@ -43,7 +43,7 @@ const updateMeetingById = async ({
   try {
     const updated = await Meeting.findByIdAndUpdate(id, {
       creatorId,
-      data,
+      date,
       startTime,
       agenda,
       attendant,
