@@ -34,52 +34,40 @@ userController.get("/profile/:id", withAuth, async (req, res) => {
   }
 });
 
-userController.patch("/profile/:userId", async (req, res) => {
-  const { userId } = req.params;
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ isError: true, message: "유저 아이디가 필요합니다." });
-  }
+userController.get("/attendance/:userId", async (req, res) => {
   try {
-    const updated = await updateUserById(userId, req.body);
-    if (!updated) {
+    if (!req.params.userId) {
       return res
-        .status(404)
-        .json({ isError: true, message: "잘못된 요청 입니다." });
+        .status(400)
+        .json({ isError: true, message: "유저 아이디가 필요합니다" });
     }
-    return res.status(200).json({ isError: false, message: "업데이트 완료" });
+    const { attendance } = await findUserById(req.params.userId);
+    return res.json({ isError: false, attendance });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ isError: true, message: "유저 정보 업데이트 실패" });
+    return res.json({
+      isError: true,
+      message: "fail to get info from server",
+    });
   }
 });
 
-userController.put(
-  "/profile/image/:id",
-  withAuth,
-  imageUploadMiddleware,
-  async (req, res) => {
-    const fileName = req.file.filename;
-    const url = `/images/${fileName}`;
-    try {
-      const updated = await updateUserById(req.params.id, { userImage: url });
-      if (!updated) {
-        return res
-          .status(500)
-          .json({ isError: true, message: "업데이트 실패" });
-      }
-      return res
-        .status(200)
-        .json({ isError: false, data: { imgUrl: `${BASE_URL}/${url}` } });
-    } catch (error) {
-      return res
-        .status(500)
-        .json({ isError: false, message: "유저 프로필 변경 실패" });
-    }
+userController.get("/search", async (req, res) => {
+  const { username } = req.query;
+  if (!username) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "유저이름이 필요합니다." });
   }
-);
+
+  try {
+    const users = await findUsersByUsername(username);
+    return res.status(200).json({ isError: false, users });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ isError: true, message: "유저 검색에 실패했습니다." });
+  }
+});
 
 userController.patch("/:userId/attendance", async (req, res) => {
   const { status } = req.body;
@@ -115,38 +103,50 @@ userController.patch("/:userId/attendance", async (req, res) => {
   }
 });
 
-userController.get("/attendance/:userId", async (req, res) => {
-  try {
-    if (!req.params.userId) {
+userController.put(
+  "/profile/image/:id",
+  withAuth,
+  imageUploadMiddleware,
+  async (req, res) => {
+    const fileName = req.file.filename;
+    const url = `/images/${fileName}`;
+    try {
+      const updated = await updateUserById(req.params.id, { userImage: url });
+      if (!updated) {
+        return res
+          .status(500)
+          .json({ isError: true, message: "업데이트 실패" });
+      }
       return res
-        .status(400)
-        .json({ isError: true, message: "유저 아이디가 필요합니다" });
+        .status(200)
+        .json({ isError: false, data: { imgUrl: `${BASE_URL}/${url}` } });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ isError: false, message: "유저 프로필 변경 실패" });
     }
-    const { attendance } = await findUserById(req.params.userId);
-    return res.json({ isError: false, attendance });
-  } catch (error) {
-    return res.json({
-      isError: true,
-      message: "fail to get info from server",
-    });
   }
-});
+);
 
-userController.get("/search", async (req, res) => {
-  const { username } = req.query;
-  if (!username) {
+userController.patch("/profile/:userId", async (req, res) => {
+  const { userId } = req.params;
+  if (!userId) {
     return res
       .status(400)
-      .json({ isError: true, message: "유저이름이 필요합니다." });
+      .json({ isError: true, message: "유저 아이디가 필요합니다." });
   }
-
   try {
-    const users = await findUsersByUsername(username);
-    return res.status(200).json({ isError: false, users });
+    const updated = await updateUserById(userId, req.body);
+    if (!updated) {
+      return res
+        .status(404)
+        .json({ isError: true, message: "잘못된 요청 입니다." });
+    }
+    return res.status(200).json({ isError: false, message: "업데이트 완료" });
   } catch (error) {
     return res
       .status(500)
-      .json({ isError: true, message: "유저 검색에 실패했습니다." });
+      .json({ isError: true, message: "유저 정보 업데이트 실패" });
   }
 });
 
