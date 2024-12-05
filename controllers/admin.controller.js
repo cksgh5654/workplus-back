@@ -30,7 +30,7 @@ adminController.get("/users", async (req, res) => {
 });
 
 adminController.get("/vacations", async (req, res) => {
-  const { nextCursor: vacationId, limit } = req.query;
+  const { nextCursor: vacationId, limit = 20 } = req.query;
   try {
     const vacations = await findVacations(vacationId, limit);
     const nextCursor = vacations[vacations.length - 1]._id;
