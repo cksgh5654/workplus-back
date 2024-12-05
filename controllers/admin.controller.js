@@ -33,7 +33,8 @@ adminController.get("/vacations", async (req, res) => {
   const { nextCursor: vacationId, limit } = req.query;
   try {
     const vacations = await findVacations(vacationId, limit);
-    return res.status(200).json({ isError: false, vacations });
+    const nextCursor = vacations[vacations.length - 1]._id;
+    return res.status(200).json({ isError: false, vacations, nextCursor });
   } catch (error) {
     console.log(error);
     return res
@@ -46,7 +47,8 @@ adminController.get("/users/attendance", async (req, res) => {
   const { nextCurosr: userId, limit = 20 } = req.query;
   try {
     const users = await getUsersAttendance(userId, limit);
-    return res.status(200).json({ isError: false, users });
+    const nextCursor = users[users.length - 1]._id;
+    return res.status(200).json({ isError: false, users, nextCursor });
   } catch (error) {
     console.log(error);
     return res

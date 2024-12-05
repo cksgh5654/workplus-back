@@ -19,7 +19,8 @@ meetingController.get("/", async (req, res) => {
   const { nextCursor: meetingId, limit = 20 } = req.query;
   try {
     const meetings = await findMeeting(meetingId, limit);
-    return res.status(200).json({ isError: false, meetings });
+    const nextCursor = meetings[meetings.length - 1]._id;
+    return res.status(200).json({ isError: false, meetings, nextCursor });
   } catch (error) {
     console.log(error);
     return res
