@@ -7,6 +7,7 @@ const {
 const {
   updateVacationById,
   findVacations,
+  getVacationsCount,
 } = require("../services/vacation.service");
 
 const adminController = require("express").Router();
@@ -34,7 +35,10 @@ adminController.get("/vacations", async (req, res) => {
   try {
     const vacations = await findVacations(vacationId, limit);
     const nextCursor = vacations[vacations.length - 1]._id;
-    return res.status(200).json({ isError: false, vacations, nextCursor });
+    const totalVacationCount = await getVacationsCount();
+    return res
+      .status(200)
+      .json({ isError: false, vacations, nextCursor, totalVacationCount });
   } catch (error) {
     console.log(error);
     return res
@@ -48,7 +52,10 @@ adminController.get("/users/attendance", async (req, res) => {
   try {
     const users = await getUsersAttendance(userId, limit);
     const nextCursor = users[users.length - 1]._id;
-    return res.status(200).json({ isError: false, users, nextCursor });
+    const totalUserCount = await getUsersCount();
+    return res
+      .status(200)
+      .json({ isError: false, users, nextCursor, totalUserCount });
   } catch (error) {
     console.log(error);
     return res

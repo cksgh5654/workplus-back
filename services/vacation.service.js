@@ -24,6 +24,10 @@ const createVacation = async ({
   }
 };
 
+const getVacationsCount = async () => {
+  return Vacation.countDocuments();
+};
+
 const findVacations = async (vacationId, limit) => {
   const query = vacationId ? { _id: { $gt: vacationId } } : {};
   try {
@@ -126,4 +130,5 @@ module.exports = {
   findVacationsByDate,
   findVacationsByMonth,
   findVacations,
+  getVacationsCount,
 };
