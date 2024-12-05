@@ -83,9 +83,14 @@ const findMeetingByDate = async (startDate, endDate) => {
   }
 };
 
-const getAllMeetings = async () => {
+const findMeetingsByMonth = async (startDate, endDate) => {
   try {
-    const documents = await Meeting.find();
+    const documents = await Meeting.find(
+      {
+        date: { $gte: startDate, $lte: endDate },
+      },
+      "-__v -updatedAt"
+    );
     return documents;
   } catch (error) {
     throw new Error(error);
@@ -98,6 +103,6 @@ module.exports = {
   updateMeetingById,
   deleteMeetingById,
   findMyMeetingByUsername,
-  getAllMeetings,
   findMeetingByDate,
+  findMeetingsByMonth,
 };

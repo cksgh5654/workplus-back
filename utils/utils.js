@@ -16,6 +16,15 @@ const processDateToISODate = (date) => {
   };
 };
 
+const getMonthStartEndDates = (date) => {
+  const [year, month] = date.split("-");
+  const lastDate = new Date(year, month, 0).getDate();
+  return {
+    startDate: new Date(`${date}-01T00:00:00.000Z`),
+    endDate: new Date(`${date}-${lastDate}T23:59:59.999Z`),
+  };
+};
+
 const createHashedPassword = (password) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
   return hashedPassword;
@@ -30,4 +39,5 @@ module.exports = {
   processDateToISODate,
   createHashedPassword,
   comparePassword,
+  getMonthStartEndDates,
 };
