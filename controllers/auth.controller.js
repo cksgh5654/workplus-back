@@ -24,7 +24,7 @@ authController.patch("/password", async (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = createHashedPassword(password);
   try {
-    const user = await findUserByEmail({ email });
+    const user = await findUserByEmail(email);
     if (!user) {
       return res
         .status(400)
@@ -35,8 +35,7 @@ authController.patch("/password", async (req, res) => {
         .status(400)
         .json({ isError: true, message: "이메일 인증을 완료해 주세요" });
     }
-    const updated = await updateUserByEmail({
-      email,
+    const updated = await updateUserByEmail(email, {
       password: hashedPassword,
     });
     if (!updated) {
@@ -62,7 +61,7 @@ authController.post("/send-email", async (req, res) => {
   const expires = Date.now() + 5 * 60 * 1000;
 
   try {
-    const user = await findUserByEmail({ email });
+    const user = await findUserByEmail(email);
     if (!user) await createUser({ email });
     else {
       if (user.signupType) {
@@ -71,8 +70,7 @@ authController.post("/send-email", async (req, res) => {
           .json({ isError: true, message: "이미 가입된 이메일 입니다." });
       }
     }
-    await updateUserByEmail({
-      email,
+    await updateUserByEmail(email, {
       token: { value: token, expires },
       emailValidationStatus: false,
     });
@@ -99,14 +97,13 @@ authController.post("/send-email-password", async (req, res) => {
   }
 
   try {
-    const existingUser = await findUserByEmail({ email });
+    const existingUser = await findUserByEmail(email);
     if (!existingUser)
       return res
         .status(400)
         .json({ isError: true, message: "가입된 이메일 계정이 아닙니다." });
 
-    await updateUserByEmail({
-      email,
+    await updateUserByEmail(email, {
       token: { value: token, expires },
       status: false,
     });
@@ -121,7 +118,7 @@ authController.post("/send-email-password", async (req, res) => {
 authController.post("/verify-email", async (req, res) => {
   const { email, token: reqToken } = req.body;
   try {
-    const userFromDB = await findUserByEmail({ email });
+    const userFromDB = await findUserByEmail(email);
     if (!userFromDB) {
       return res
         .status(404)
@@ -140,12 +137,10 @@ authController.post("/verify-email", async (req, res) => {
         .json({ isError: true, message: "토큰이 만료 되었습니다." });
     }
 
-    await updateUserByEmail({
-      email,
+    await updateUserByEmail(email, {
       emailValidationStatus: true,
       token: { value: "", expires: "" },
     });
-
     return res
       .status(200)
       .json({ isError: false, message: "이메일 인증 성공" });
@@ -164,7 +159,7 @@ authController.post("/signup", async (req, res) => {
   const hashedPassword = createHashedPassword(password);
 
   try {
-    const existingUser = await findUserByEmail({ email });
+    const existingUser = await findUserByEmail(email);
     if (existingUser) {
       if (existingUser.signupType) {
         return res.status(400).json({
@@ -180,8 +175,7 @@ authController.post("/signup", async (req, res) => {
       }
     }
 
-    const user = await updateUserByEmail({
-      email,
+    const user = await updateUserByEmail(email, {
       username,
       password: hashedPassword,
       signupType: "email",
@@ -206,7 +200,7 @@ authController.post("/signin", async (req, res) => {
   }
 
   try {
-    const existingUser = await findUserByEmail({ email });
+    const existingUser = await findUserByEmail(email);
     if (!existingUser) {
       return res
         .status(400)
@@ -276,7 +270,7 @@ authController.post("/google-oauth-signin", async (req, res) => {
         .json({ isError: true, message: "구글 oauth erorr" });
     }
     const { email } = request.data;
-    const user = await findUserByEmail({ email });
+    const user = await findUserByEmail(email);
     if (!user) {
       return res
         .status(400)
@@ -339,16 +333,15 @@ authController.post("/google-oauth-signup", async (req, res) => {
         .json({ isError: true, message: "구글 oauth erorr" });
     }
     const { name: username, email, picture: userImage } = request.data;
-    const user = await findUserByEmail({ email });
+    const user = await findUserByEmail(email);
     if (user && user.signupType) {
       return res
         .status(400)
         .json({ isError: true, message: "이미 가입된 이메일 계정 입니다." });
     }
     if (user && !user.signupType) {
-      await updateUserByEmail({
+      await updateUserByEmail(email, {
         username,
-        email,
         userImage,
         emailValidationStatus: true,
         signupType: "google",

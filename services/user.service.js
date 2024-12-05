@@ -1,5 +1,5 @@
 const User = require("../schemas/user.schema");
-const { processImageUrl } = require("../utils/utils");
+const { processImageUrl, removeUndefinedFields } = require("../utils/utils");
 
 const createUser = (userData) => {
   try {
@@ -22,7 +22,7 @@ const findUserById = async (id) => {
 
 const findUserByEmail = async (email) => {
   try {
-    const document = await User.findOne(email).lean();
+    const document = await User.findOne({ email }).lean();
     if (document === null) return null;
     return { ...document, userImage: processImageUrl(document.userImage) };
   } catch (error) {
@@ -66,9 +66,37 @@ const getUsers = async () => {
   }
 };
 
-const updateUserById = async (id, data) => {
+const updateUserById = async (
+  id,
+  {
+    username,
+    password,
+    userImage,
+    phone,
+    birth,
+    address,
+    token,
+    emailValidationStatus,
+    signupType,
+    attendance,
+    isAdmin,
+  }
+) => {
+  const filterdObject = removeUndefinedFields({
+    username,
+    password,
+    userImage,
+    phone,
+    birth,
+    address,
+    token,
+    emailValidationStatus,
+    signupType,
+    attendance,
+    isAdmin,
+  });
   try {
-    const updated = await User.findByIdAndUpdate(id, data);
+    const updated = await User.findByIdAndUpdate(id, filterdObject);
     if (!updated) {
       return null;
     }
@@ -78,10 +106,37 @@ const updateUserById = async (id, data) => {
   }
 };
 
-const updateUserByEmail = async (data) => {
-  const { email, ...rest } = data;
+const updateUserByEmail = async (
+  email,
+  {
+    username,
+    password,
+    userImage,
+    phone,
+    birth,
+    address,
+    token,
+    emailValidationStatus,
+    signupType,
+    attendance,
+    isAdmin,
+  }
+) => {
+  const filterdObject = removeUndefinedFields({
+    username,
+    password,
+    userImage,
+    phone,
+    birth,
+    address,
+    token,
+    emailValidationStatus,
+    signupType,
+    attendance,
+    isAdmin,
+  });
   try {
-    const updated = await User.updateOne({ email }, rest);
+    const updated = await User.updateOne({ email }, filterdObject);
     if (!updated) {
       return null;
     }

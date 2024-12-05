@@ -34,10 +34,20 @@ const comparePassword = (password, hashedPassword) => {
   return bcrypt.compareSync(password, hashedPassword);
 };
 
+const removeUndefinedFields = (object) => {
+  return Object.keys(object).reduce((acc, key) => {
+    if (object[key] !== undefined) {
+      acc[key] = object[key];
+    }
+    return acc;
+  }, {});
+};
+
 module.exports = {
   processImageUrl,
   processDateToISODate,
   createHashedPassword,
   comparePassword,
   getMonthStartEndDates,
+  removeUndefinedFields,
 };
