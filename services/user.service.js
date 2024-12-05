@@ -91,6 +91,15 @@ const updateUserByEmail = async (data) => {
   }
 };
 
+const deleteUserById = async (id) => {
+  try {
+    const deleted = await User.findByIdAndDelete(id);
+    return deleted;
+  } catch (error) {
+    throw new Error("DB에러", { cause: error });
+  }
+};
+
 module.exports = {
   createUser,
   findUserById,
@@ -100,4 +109,5 @@ module.exports = {
   findUsersByUsername,
   getUsersAttendance,
   getUsers,
+  deleteUserById,
 };
