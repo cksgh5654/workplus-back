@@ -23,6 +23,22 @@ const createUser = ({
   }
 };
 
+const getUsers = async (userId, limit) => {
+  const query = userId ? { _id: { $gt: userId } } : {};
+  try {
+    const documents = User.find(query, "_id username email phone birth address") //
+      .sort({ _id: 1 })
+      .limit(limit);
+    return documents;
+  } catch (error) {
+    throw new Error("[findUsers 에러]", { cause: error });
+  }
+};
+
+const getUsersCount = async () => {
+  return await User.countDocuments();
+};
+
 const findUserById = async (id) => {
   try {
     const document = await User.findById(id).lean();
@@ -55,27 +71,18 @@ const findUsersByUsername = async (username) => {
   }
 };
 
-const getUsersAttendance = async () => {
+const getUsersAttendance = async (userId, limit) => {
+  const query = userId ? { _id: { $gt: userId } } : {};
   try {
     const documents = await User.find(
-      { isAdmin: false },
-      "username userImage attendance"
-    ).lean();
+      { isAdmin: false, ...query },
+      "_id username userImage attendance"
+    ) //
+      .sort({ _id: 1 })
+      .limit(limit);
     return documents;
   } catch (error) {
     throw new Error("[DB getUsersAttendance] 에러", { cause: error });
-  }
-};
-
-const getUsers = async () => {
-  try {
-    const documents = await User.find(
-      { isAdmin: false },
-      "-updatedAt -__v"
-    ).lean();
-    return documents;
-  } catch (error) {
-    throw new Error("[DB getUsers] 에러", { cause: error });
   }
 };
 
@@ -176,6 +183,7 @@ module.exports = {
   updateUserByEmail,
   findUsersByUsername,
   getUsersAttendance,
-  getUsers,
   deleteUserById,
+  getUsers,
+  getUsersCount,
 };

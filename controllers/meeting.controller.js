@@ -6,6 +6,7 @@ const {
   findMyMeetingByUsername,
   findMeetingByDate,
   findMeetingsByMonth,
+  findMeeting,
 } = require("../services/meeting.service");
 const {
   processDateToISODate,
@@ -13,6 +14,19 @@ const {
 } = require("../utils/utils");
 
 const meetingController = require("express").Router();
+
+meetingController.get("/", async (req, res) => {
+  const { nextCursor: meetingId, limit = 20 } = req.query;
+  try {
+    const meetings = await findMeeting(meetingId, limit);
+    return res.status(200).json({ isError: false, meetings });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ isError: true, message: "회의 데이터 가져오기 실패" });
+  }
+});
 
 meetingController.get("/:meetingId", async (req, res) => {
   try {

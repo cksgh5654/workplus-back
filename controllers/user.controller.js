@@ -4,6 +4,8 @@ const {
   findUserById,
   updateUserById,
   findUsersByUsername,
+  findUsers,
+  getUsersCount,
 } = require("../services/user.service");
 const imageUploadMiddleware = require("../utils/imageUpload.util");
 

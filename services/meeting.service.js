@@ -23,6 +23,18 @@ const createMeeting = async ({
   }
 };
 
+const findMeeting = async (meetingId, limit) => {
+  const query = meetingId ? { _id: { $gt: meetingId } } : {};
+  try {
+    const documents = await Meeting.find(query) //
+      .sort({ _id: 1 })
+      .limit(limit);
+    return documents;
+  } catch (error) {
+    throw new Error("findMeeting DB에러", { cause: error });
+  }
+};
+
 const findMeetingById = async (id) => {
   try {
     const document = await Meeting.findById(id);
@@ -105,4 +117,5 @@ module.exports = {
   findMyMeetingByUsername,
   findMeetingByDate,
   findMeetingsByMonth,
+  findMeeting,
 };

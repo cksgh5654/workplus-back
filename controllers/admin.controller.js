@@ -2,28 +2,53 @@ const {
   getUsers,
   getUsersAttendance,
   deleteUserById,
+  getUsersCount,
 } = require("../services/user.service");
-const { updateVacationById } = require("../services/vacation.service");
+const {
+  updateVacationById,
+  findVacations,
+} = require("../services/vacation.service");
 
 const adminController = require("express").Router();
 const VACATION_STATUS = ["승인", "거부", "대기중"];
 
-adminController.get("/users", async (_req, res) => {
+adminController.get("/users", async (req, res) => {
+  const { nextCursor: userId, limit = 20 } = req.query;
   try {
-    const documents = await getUsers();
-    return res.status(200).json({ isError: false, users: documents });
-  } catch (error) {
+    const users = await getUsers(userId, limit);
+    const totalUserCount = await getUsersCount();
+    const nextCursor = users[users.length - 1]._id;
     return res
-      .status(500)
-      .json({ isError: true, message: "유저 정보 가져오기 실패" });
+      .status(200)
+      .json({ isError: false, users, nextCursor, totalUserCount });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ isError: true, message: "유저 데이터 가져오기 실패" });
   }
 });
 
-adminController.get("/users/attendance", async (_req, res) => {
+adminController.get("/vacations", async (req, res) => {
+  const { nextCursor: vacationId, limit } = req.query;
   try {
-    const documents = await getUsersAttendance();
-    return res.status(200).json({ isError: false, users: documents });
+    const vacations = await findVacations(vacationId, limit);
+    return res.status(200).json({ isError: false, vacations });
   } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ isError: true, message: "휴가 데이터 가져오기 실패" });
+  }
+});
+
+adminController.get("/users/attendance", async (req, res) => {
+  const { nextCurosr: userId, limit = 20 } = req.query;
+  try {
+    const users = await getUsersAttendance(userId, limit);
+    return res.status(200).json({ isError: false, users });
+  } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "유저 정보 가져오기 실패" });

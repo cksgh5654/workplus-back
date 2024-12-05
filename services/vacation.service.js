@@ -24,6 +24,21 @@ const createVacation = async ({
   }
 };
 
+const findVacations = async (vacationId, limit) => {
+  const query = vacationId ? { _id: { $gt: vacationId } } : {};
+  try {
+    const documents = await Vacation.find(
+      query,
+      "username vacationType startDate endDate reason status"
+    ) //
+      .sort({ _id: 1 })
+      .limit(limit);
+    return documents;
+  } catch (error) {
+    throw new Error("findVacations DB에러", { cause: error });
+  }
+};
+
 const findVacationById = async (id) => {
   try {
     const document = await Vacation.findById(id);
@@ -110,4 +125,5 @@ module.exports = {
   findVacationsByUserId,
   findVacationsByDate,
   findVacationsByMonth,
+  findVacations,
 };
