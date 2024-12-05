@@ -4,48 +4,15 @@ const {
   updateVacationById,
   deleteVacationById,
   findVacationsByUserId,
-  getAllVacations,
   findVacationsByDate,
+  findVacationsByMonth,
 } = require("../services/vacation.service");
-const { processDateToISODate } = require("../utils/utils");
+const {
+  processDateToISODate,
+  getMonthStartEndDates,
+} = require("../utils/utils");
 
 const vacationController = require("express").Router();
-
-vacationController.get("/", async (_req, res) => {
-  try {
-    const documents = await getAllVacations();
-    return res.status(200).json({
-      isError: false,
-      vacations: documents.map(
-        ({
-          _id: vacationId,
-          requesterId,
-          username,
-          startDate,
-          endDate,
-          vacationType,
-          reason,
-          createdAt,
-          status,
-        }) => ({
-          vacationId,
-          requesterId,
-          username,
-          startDate,
-          endDate,
-          vacationType,
-          reason,
-          createdAt,
-          status,
-        })
-      ),
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ isError: true, message: "휴가 정보 가져오기 실패" });
-  }
-});
 
 vacationController.get("/:vacationId", async (req, res) => {
   try {
@@ -124,6 +91,27 @@ vacationController.get("/date/:date", async (req, res) => {
     return res.status(200).json({ isError: false, vacations: documets });
   } catch (error) {
     console.log(error);
+    return res
+      .status(500)
+      .json({ isError: true, message: "휴가 데이터 가져오기 실패" });
+  }
+});
+
+vacationController.get("/month/:date", async (req, res) => {
+  const { date } = req.params;
+  if (!date) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "날자 데이터가 필요합니다." });
+  }
+  const { startDate, endDate } = getMonthStartEndDates(date);
+  try {
+    const vacations = await findVacationsByMonth(startDate, endDate);
+    return res.status(200).json({
+      isError: false,
+      vacations,
+    });
+  } catch (error) {
     return res
       .status(500)
       .json({ isError: true, message: "휴가 데이터 가져오기 실패" });

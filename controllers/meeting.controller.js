@@ -4,42 +4,15 @@ const {
   updateMeetingById,
   deleteMeetingById,
   findMyMeetingByUsername,
-  getAllMeetings,
   findMeetingByDate,
+  findMeetingsByMonth,
 } = require("../services/meeting.service");
-const { processDateToISODate } = require("../utils/utils");
+const {
+  processDateToISODate,
+  getMonthStartEndDates,
+} = require("../utils/utils");
 
 const meetingController = require("express").Router();
-
-meetingController.get("/", async (_req, res) => {
-  try {
-    const documents = await getAllMeetings();
-    const meetings = documents.map(
-      ({
-        _id: meetingId,
-        creatorId,
-        attendant,
-        date,
-        startTime,
-        agenda,
-        createdAt,
-      }) => ({
-        meetingId,
-        creatorId,
-        attendant,
-        date,
-        startTime,
-        agenda,
-        createdAt,
-      })
-    );
-    return res.status(200).json({ isError: false, meetings });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ isError: false, message: "회의 데이터 가져오기 실패" });
-  }
-});
 
 meetingController.get("/:meetingId", async (req, res) => {
   try {
@@ -129,6 +102,24 @@ meetingController.get("/date/:date", async (req, res) => {
     return res
       .status(500)
       .json({ isError: true, message: "회의 데이터 가져오기 실패" });
+  }
+});
+
+meetingController.get("/month/:date", async (req, res) => {
+  const { date } = req.params;
+  if (!date) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "날짜 데이터가 필요 합니다." });
+  }
+  const { startDate, endDate } = getMonthStartEndDates(date);
+  try {
+    const meetings = await findMeetingsByMonth(startDate, endDate);
+    return res.status(200).json({ isError: false, meetings });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ isError: false, message: "회의 데이터 가져오기 실패" });
   }
 });
 

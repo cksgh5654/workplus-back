@@ -72,9 +72,18 @@ const findVacationsByDate = async (startDate, endDate) => {
   }
 };
 
-const getAllVacations = async () => {
+const findVacationsByMonth = async (startDate, endDate) => {
   try {
-    const documents = await Vacation.find();
+    const documents = await Vacation.find(
+      {
+        $or: [
+          { startDate: { $gte: startDate, $lte: endDate } },
+          { endDate: { $gte: startDate, $lte: endDate } },
+          { startDate: { $lte: startDate }, endDate: { $gte: endDate } },
+        ],
+      },
+      "-__v -updatedAt"
+    );
     return documents;
   } catch (error) {
     throw new Error("[DB getAllVacations] 에러", { cause: error });
@@ -87,6 +96,6 @@ module.exports = {
   updateVacationById,
   deleteVacationById,
   findVacationsByUserId,
-  getAllVacations,
   findVacationsByDate,
+  findVacationsByMonth,
 };
