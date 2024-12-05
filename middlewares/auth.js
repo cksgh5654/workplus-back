@@ -12,7 +12,7 @@ const withAuth = async (req, res, next) => {
 
   try {
     const { email } = jwt.verify(token, JWT_SECRET_KEY);
-    const user = await findUserByEmail({ email });
+    const user = await findUserByEmail(email);
     if (!user) {
       return res
         .status(401)
