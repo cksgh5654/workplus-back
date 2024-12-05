@@ -1,4 +1,5 @@
 const Vacation = require("../schemas/vacation.schema");
+const { removeUndefinedFields } = require("../utils/utils");
 
 const createVacation = async ({
   username,
@@ -32,10 +33,21 @@ const findVacationById = async (id) => {
   }
 };
 
-const updateVacationById = async (data) => {
-  const { id, ...rest } = data;
+const updateVacationById = async (
+  id,
+  { requesterId, username, startDate, endDate, vacationType, reason, status }
+) => {
+  const filterdObject = removeUndefinedFields({
+    requesterId,
+    username,
+    startDate,
+    endDate,
+    vacationType,
+    reason,
+    status,
+  });
   try {
-    const document = await Vacation.findByIdAndUpdate(id, rest);
+    const document = await Vacation.findByIdAndUpdate(id, filterdObject);
     return document;
   } catch (error) {
     throw new Error("[DB updateVacationById] 에러", { cause: error });

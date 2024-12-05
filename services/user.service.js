@@ -1,9 +1,22 @@
 const User = require("../schemas/user.schema");
 const { processImageUrl, removeUndefinedFields } = require("../utils/utils");
 
-const createUser = (userData) => {
+const createUser = ({
+  email,
+  username,
+  userImage,
+  emailValidationStatus,
+  signupType,
+}) => {
+  const filterdObject = removeUndefinedFields({
+    email,
+    username,
+    userImage,
+    emailValidationStatus,
+    signupType,
+  });
   try {
-    const document = User.create(userData);
+    const document = User.create(filterdObject);
     return document;
   } catch (error) {
     throw new Error("[DB createUser] 에러", { cause: error });

@@ -38,8 +38,7 @@ adminController.patch("/vacation/:vacationId/status", async (req, res) => {
       .json({ isError: true, message: "잘못된 요청 상태(status) 입니다" });
   }
   try {
-    const updated = await updateVacationById({
-      id: req.params.vacationId,
+    const updated = await updateVacationById(req.params.vacationId, {
       status,
     });
     if (!updated) {

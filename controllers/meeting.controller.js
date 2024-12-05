@@ -17,6 +17,11 @@ const meetingController = require("express").Router();
 meetingController.get("/:meetingId", async (req, res) => {
   try {
     const document = await findMeetingById(req.params.meetingId);
+    if (document === null) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "잘못된 회의 데이터 요청 입니다." });
+    }
     const {
       _id,
       creatorId,

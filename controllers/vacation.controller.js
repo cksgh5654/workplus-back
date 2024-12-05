@@ -139,9 +139,10 @@ vacationController.post("/", async (req, res) => {
 });
 
 vacationController.put("/:vacationId", async (req, res) => {
-  const formData = { id: req.params.vacationId, ...req.body };
   try {
-    const updated = await updateVacationById(formData);
+    const updated = await updateVacationById(req.params.vacationId, {
+      ...req.body,
+    });
     if (!updated) {
       return res
         .status(404)
