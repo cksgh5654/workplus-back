@@ -78,6 +78,7 @@ meetingController.get("/user/:username", async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "회의 데이터 가져오기 실패" });
@@ -90,6 +91,7 @@ meetingController.get("/my/unchecked/:username", async (req, res) => {
     const unCheckedMeeting = await findUncheckedMeeting(username);
     return res.status(200).json({ isError: false, unCheckedMeeting });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "미팅 알림 데이터 가져오기 실패" });
@@ -128,6 +130,7 @@ meetingController.get("/month/:date", async (req, res) => {
     res.setHeader("Cache-Control", ["public", `max-age=${60 * 5}`]);
     return res.status(200).json({ isError: false, meetings });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: false, message: "회의 데이터 가져오기 실패" });
@@ -182,6 +185,7 @@ meetingController.patch("/check/:username/:meetingId", async (req, res) => {
     }
     return res.status(200).json({ isError: false, message: "회의 체크 성공" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: "회의 체크 실패" });
   }
 });
@@ -191,6 +195,7 @@ meetingController.delete("/:meetingId", async (req, res) => {
     const _deleted = await deleteMeetingById(req.params.meetingId);
     return res.status(204).send();
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: "회의 삭제 실패" });
   }
 });

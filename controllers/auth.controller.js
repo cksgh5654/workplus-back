@@ -46,6 +46,7 @@ authController.patch("/password", async (req, res) => {
 
     return res.status(204).send();
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: error.message });
   }
 });
@@ -111,6 +112,7 @@ authController.post("/send-email-password", async (req, res) => {
 
     return res.status(204).send();
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: "이메일 전송 실패" });
   }
 });
@@ -145,6 +147,7 @@ authController.post("/verify-email", async (req, res) => {
       .status(200)
       .json({ isError: false, message: "이메일 인증 성공" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: error.message });
   }
 });
@@ -187,6 +190,7 @@ authController.post("/signup", async (req, res) => {
     }
     return res.status(201).json({ isError: false, message: "회원 가입 성공" });
   } catch (error) {
+    console.log(error);
     return res.json({ isError: true, message: error.message });
   }
 });
@@ -240,6 +244,7 @@ authController.post("/signin", async (req, res) => {
 
     return res.status(200).json({ isError: false, user: userData });
   } catch (error) {
+    console.log(error);
     return res.json({ isError: true, message: error.message });
   }
 });
@@ -303,6 +308,7 @@ authController.post("/google-oauth-signin", async (req, res) => {
     };
     return res.json({ isError: false, user: userData });
   } catch (error) {
+    console.log(error);
     return res.json({ isError: true, message: "구글로 로그인 실패" });
   }
 });

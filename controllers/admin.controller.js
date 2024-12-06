@@ -136,6 +136,7 @@ adminController.delete("/users/:userId", async (req, res) => {
     }
     return res.status(200).json({ isError: false, message: "유저 삭제 완료" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "유저 정보 삭제 실패" });

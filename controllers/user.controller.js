@@ -30,6 +30,7 @@ userController.get("/profile/:id", withAuth, async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "프로필 데이터 가져오기 실패" });
@@ -46,6 +47,7 @@ userController.get("/attendance/:userId", async (req, res) => {
     const { attendance } = await findUserById(req.params.userId);
     return res.json({ isError: false, attendance });
   } catch (error) {
+    console.log(error);
     return res.json({
       isError: true,
       message: "fail to get info from server",
@@ -65,6 +67,7 @@ userController.get("/search", async (req, res) => {
     const users = await findUsersByUsername(username);
     return res.status(200).json({ isError: false, users });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "유저 검색에 실패했습니다." });
@@ -99,6 +102,7 @@ userController.patch("/:userId/attendance", async (req, res) => {
     }
     return res.status(200).json({ isError: false, attendance });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "유저 정보 업데이트 실패" });
@@ -123,6 +127,7 @@ userController.put(
         .status(200)
         .json({ isError: false, data: { imgUrl: `${BASE_URL}/${url}` } });
     } catch (error) {
+      console.log(error);
       return res
         .status(500)
         .json({ isError: false, message: "유저 프로필 변경 실패" });
@@ -146,6 +151,7 @@ userController.patch("/profile/:userId", async (req, res) => {
     }
     return res.status(200).json({ isError: false, message: "업데이트 완료" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "유저 정보 업데이트 실패" });

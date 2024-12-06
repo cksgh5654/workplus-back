@@ -40,6 +40,7 @@ vacationController.get("/:vacationId", async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "휴가 데이터 가져오기 실패" });
@@ -72,6 +73,7 @@ vacationController.get("/user/:userId", async (req, res) => {
     );
     return res.status(200).json({ isError: false, data: { vacations } });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "휴가 데이터 가져오기 실패" });
@@ -113,6 +115,7 @@ vacationController.get("/month/:date", async (req, res) => {
       vacations,
     });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "휴가 데이터 가져오기 실패" });
@@ -135,6 +138,7 @@ vacationController.post("/", async (req, res) => {
 
     return res.status(201).json({ isError: false, message: "휴가 생성 성공" });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ isError: true, message: "휴가 생성 실패" });
   }
 });
@@ -151,6 +155,7 @@ vacationController.put("/:vacationId", async (req, res) => {
     }
     return res.status(204).send();
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "휴가 정보 수정 실패" });
@@ -167,6 +172,7 @@ vacationController.delete("/:vacationId", async (req, res) => {
     }
     return res.status(204).send();
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "휴가 신청 삭제 실패" });
