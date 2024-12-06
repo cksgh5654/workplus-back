@@ -112,9 +112,12 @@ const findMeetingsByMonth = async (startDate, endDate) => {
   }
 };
 
-const findUncheckedMeeting = async (userId) => {
+const findUncheckedMeeting = async (username) => {
   try {
-    const document = await Meeting.findOne({ checkedBy: { $nin: [userId] } });
+    const document = await Meeting.findOne({
+      attendant: username,
+      checkedBy: { $nin: [username] },
+    });
     return !!document;
   } catch (error) {
     throw new Error("findUncheckedMeetings DB에러", { cause: error });

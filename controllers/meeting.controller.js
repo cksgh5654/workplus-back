@@ -84,11 +84,10 @@ meetingController.get("/user/:username", async (req, res) => {
   }
 });
 
-meetingController.get("/my/unchecked/:userId", async (req, res) => {
-  const { userId } = req.params;
+meetingController.get("/my/unchecked/:username", async (req, res) => {
+  const { username } = req.params;
   try {
-    const unCheckedMeeting = await findUncheckedMeeting(userId);
-    res.setHeader("Cache-Control", ["no-store"]);
+    const unCheckedMeeting = await findUncheckedMeeting(username);
     return res.status(200).json({ isError: false, unCheckedMeeting });
   } catch (error) {
     return res
