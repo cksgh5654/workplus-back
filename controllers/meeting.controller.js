@@ -154,12 +154,12 @@ meetingController.post("/", async (req, res) => {
 
 meetingController.put("/:meetingId", async (req, res) => {
   try {
-    const _updated = await updateMeetingById({
-      id: req.params.meetingId,
+    const _updated = await updateMeetingById(req.params.meetingId, {
       ...req.body,
     });
     return res.status(204).send();
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ isError: true, message: "미팅 데이터 업데이트 실패" });
