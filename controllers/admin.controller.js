@@ -14,14 +14,19 @@ const adminController = require("express").Router();
 const VACATION_STATUS = ["승인", "거부", "대기중"];
 
 adminController.get("/users", async (req, res) => {
-  const { nextCursor: userId, limit = 20 } = req.query;
+  const { limit = 20, page = 1 } = req.query;
+  const currentPage = Number(page);
   try {
-    const users = await getUsers(userId, limit);
+    const users = await getUsers(limit, currentPage - 1);
     const totalUserCount = await getUsersCount();
-    const nextCursor = users[users.length - 1]._id;
-    return res
-      .status(200)
-      .json({ isError: false, users, nextCursor, totalUserCount });
+    const totalPage = Math.ceil(totalUserCount / limit);
+    const nextPage = currentPage + 1 > totalPage ? null : currentPage + 1;
+    const prevPage = currentPage - 1 === 0 ? 0 : currentPage - 1;
+    return res.status(200).json({
+      isError: false,
+      users,
+      pageInfo: { totalUserCount, totalPage, currentPage, nextPage, prevPage },
+    });
   } catch (error) {
     console.log(error);
     return res
@@ -31,14 +36,25 @@ adminController.get("/users", async (req, res) => {
 });
 
 adminController.get("/vacations", async (req, res) => {
-  const { nextCursor: vacationId, limit = 20 } = req.query;
+  const { limit = 20, page = 1 } = req.query;
+  const currentPage = Number(page);
   try {
-    const vacations = await findVacations(vacationId, limit);
-    const nextCursor = vacations[vacations.length - 1]._id;
+    const vacations = await findVacations(limit, currentPage - 1);
     const totalVacationCount = await getVacationsCount();
-    return res
-      .status(200)
-      .json({ isError: false, vacations, nextCursor, totalVacationCount });
+    const totalPage = Math.ceil(totalVacationCount / limit);
+    const nextPage = currentPage + 1 > totalPage ? null : currentPage + 1;
+    const prevPage = currentPage - 1 === 0 ? 0 : currentPage - 1;
+    return res.status(200).json({
+      isError: false,
+      vacations,
+      pageInfo: {
+        totalVacationCount,
+        totalPage,
+        currentPage,
+        nextPage,
+        prevPage,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res
@@ -48,14 +64,25 @@ adminController.get("/vacations", async (req, res) => {
 });
 
 adminController.get("/users/attendance", async (req, res) => {
-  const { nextCurosr: userId, limit = 20 } = req.query;
+  const { limit = 20, page = 1 } = req.query;
+  const currentPage = Number(page);
   try {
-    const users = await getUsersAttendance(userId, limit);
-    const nextCursor = users[users.length - 1]._id;
+    const users = await getUsersAttendance(limit, currentPage - 1);
     const totalUserCount = await getUsersCount();
-    return res
-      .status(200)
-      .json({ isError: false, users, nextCursor, totalUserCount });
+    const totalPage = Math.ceil(totalUserCount / limit);
+    const nextPage = currentPage + 1 > totalPage ? null : currentPage + 1;
+    const prevPage = currentPage - 1 === 0 ? 0 : currentPage - 1;
+    return res.status(200).json({
+      isError: false,
+      users,
+      pageInfo: {
+        totalUserCount,
+        totalPage,
+        currentPage,
+        nextPage,
+        prevPage,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res

@@ -28,15 +28,15 @@ const getVacationsCount = async () => {
   return Vacation.countDocuments();
 };
 
-const findVacations = async (vacationId, limit) => {
-  const query = vacationId ? { _id: { $gt: vacationId } } : {};
+const findVacations = async (limit, skip) => {
   try {
     const documents = await Vacation.find(
-      query,
+      {},
       "username vacationType startDate endDate reason status"
     ) //
       .sort({ _id: 1 })
-      .limit(limit);
+      .limit(limit)
+      .skip(limit * skip);
     return documents;
   } catch (error) {
     throw new Error("findVacations DB에러", { cause: error });

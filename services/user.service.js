@@ -23,12 +23,12 @@ const createUser = ({
   }
 };
 
-const getUsers = async (userId, limit) => {
-  const query = userId ? { _id: { $gt: userId } } : {};
+const getUsers = async (limit, skip) => {
   try {
-    const documents = User.find(query, "_id username email phone birth address") //
+    const documents = User.find({}, "_id username email phone birth address") //
       .sort({ _id: 1 })
-      .limit(limit);
+      .limit(limit)
+      .skip(limit * skip);
     return documents;
   } catch (error) {
     throw new Error("[findUsers 에러]", { cause: error });
@@ -71,15 +71,12 @@ const findUsersByUsername = async (username) => {
   }
 };
 
-const getUsersAttendance = async (userId, limit) => {
-  const query = userId ? { _id: { $gt: userId } } : {};
+const getUsersAttendance = async (limit, skip) => {
   try {
-    const documents = await User.find(
-      { isAdmin: false, ...query },
-      "_id username userImage attendance"
-    ) //
+    const documents = await User.find({}, "_id username userImage attendance") //
       .sort({ _id: 1 })
-      .limit(limit);
+      .limit(limit)
+      .skip(limit * skip);
     return documents;
   } catch (error) {
     throw new Error("[DB getUsersAttendance] 에러", { cause: error });
