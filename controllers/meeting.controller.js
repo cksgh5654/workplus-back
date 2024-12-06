@@ -169,10 +169,10 @@ meetingController.put("/:meetingId", async (req, res) => {
 
 meetingController.patch("/check/:username/:meetingId", async (req, res) => {
   const { username, meetingId } = req.params;
-  if (!username) {
+  if (!username || !meetingId) {
     return res
       .status(400)
-      .json({ isError: true, message: "유저 정보가 필요합니다." });
+      .json({ isError: true, message: "데이터 정보가 필요합니다." });
   }
   try {
     const updated = await updateMeetingById(meetingId, { username });
