@@ -107,6 +107,7 @@ vacationController.get("/month/:date", async (req, res) => {
   const { startDate, endDate } = getMonthStartEndDates(date);
   try {
     const vacations = await findVacationsByMonth(startDate, endDate);
+    res.setHeader("Cache-Control", ["public", `max-age=${60 * 5}`]);
     return res.status(200).json({
       isError: false,
       vacations,

@@ -88,6 +88,7 @@ meetingController.get("/my/unchecked/:userId", async (req, res) => {
   const { userId } = req.params;
   try {
     const unCheckedMeeting = await findUncheckedMeeting(userId);
+    res.setHeader("Cache-Control", ["no-store"]);
     return res.status(200).json({ isError: false, unCheckedMeeting });
   } catch (error) {
     return res
@@ -125,6 +126,7 @@ meetingController.get("/month/:date", async (req, res) => {
   const { startDate, endDate } = getMonthStartEndDates(date);
   try {
     const meetings = await findMeetingsByMonth(startDate, endDate);
+    res.setHeader("Cache-Control", ["public", `max-age=${60 * 5}`]);
     return res.status(200).json({ isError: false, meetings });
   } catch (error) {
     return res
