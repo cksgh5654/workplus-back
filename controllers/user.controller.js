@@ -4,10 +4,8 @@ const {
   findUserById,
   updateUserById,
   findUsersByUsername,
-  findUsers,
-  getUsersCount,
 } = require("../services/user.service");
-const imageUploadMiddleware = require("../utils/imageUpload.util");
+const imageUploadMiddleware = require("../middlewares/imageUpload.middleware");
 
 const userController = require("express").Router();
 
@@ -115,7 +113,7 @@ userController.put(
   imageUploadMiddleware,
   async (req, res) => {
     const fileName = req.file.filename;
-    const url = `/images/${fileName}`;
+    const url = `images/${fileName}`;
     try {
       const updated = await updateUserById(req.params.id, { userImage: url });
       if (!updated) {
