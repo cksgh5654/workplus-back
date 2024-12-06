@@ -7,6 +7,7 @@ const {
   findMeetingByDate,
   findMeetingsByMonth,
   findMeeting,
+  findUncheckedMeeting,
 } = require("../services/meeting.service");
 const {
   processDateToISODate,
@@ -69,30 +70,7 @@ meetingController.get("/:meetingId", async (req, res) => {
 
 meetingController.get("/user/:username", async (req, res) => {
   try {
-    const documents = await findMyMeetingByUsername(req.params.username);
-    const meetings = documents.map(
-      ({
-        _id: meetingId,
-        creatorId,
-        attendant,
-        date,
-        startTime,
-        agenda,
-        createdAt,
-        updatedAt,
-        creatorUsername,
-      }) => ({
-        meetingId,
-        creatorUsername,
-        creatorId,
-        attendant,
-        date,
-        startTime,
-        agenda,
-        createdAt,
-        updatedAt,
-      })
-    );
+    const meetings = await findMyMeetingByUsername(req.params.username);
     return res.status(200).json({
       isError: false,
       data: {
@@ -103,6 +81,18 @@ meetingController.get("/user/:username", async (req, res) => {
     return res
       .status(500)
       .json({ isError: true, message: "회의 데이터 가져오기 실패" });
+  }
+});
+
+meetingController.get("/my/unchecked/:userId", async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const unCheckedMeeting = await findUncheckedMeeting(userId);
+    return res.status(200).json({ isError: false, unCheckedMeeting });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ isError: true, message: "미팅 알림 데이터 가져오기 실패" });
   }
 });
 
@@ -169,7 +159,29 @@ meetingController.put("/:meetingId", async (req, res) => {
     });
     return res.status(204).send();
   } catch (error) {
-    return res.status(500).json({ isError: true, message: error.message });
+    return res
+      .status(500)
+      .json({ isError: true, message: "미팅 데이터 업데이트 실패" });
+  }
+});
+
+meetingController.patch("/check/:username/:meetingId", async (req, res) => {
+  const { username, meetingId } = req.params;
+  if (!username) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "유저 정보가 필요합니다." });
+  }
+  try {
+    const updated = await updateMeetingById(meetingId, { username });
+    if (!updated) {
+      return res
+        .status(400)
+        .json({ isError: true, message: "잘못된 정보 요청입니다." });
+    }
+    return res.status(200).json({ isError: false, message: "회의 체크 성공" });
+  } catch (error) {
+    return res.status(500).json({ isError: true, message: "회의 체크 실패" });
   }
 });
 

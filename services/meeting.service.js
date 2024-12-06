@@ -1,4 +1,5 @@
 const Meeting = require("../schemas/meeting.schema");
+const { removeUndefinedFields } = require("../utils/utils");
 
 const createMeeting = async ({
   creatorId,
@@ -44,22 +45,21 @@ const findMeetingById = async (id) => {
   }
 };
 
-const updateMeetingById = async ({
+const updateMeetingById = async (
   id,
-  creatorId,
-  date,
-  startTime,
-  agenda,
-  attendant,
-}) => {
+  { creatorId, date, startTime, agenda, attendant, username }
+) => {
+  const filterdObject = removeUndefinedFields({
+    id,
+    creatorId,
+    date,
+    startTime,
+    agenda,
+    attendant,
+    checkedBy: [username],
+  });
   try {
-    const updated = await Meeting.findByIdAndUpdate(id, {
-      creatorId,
-      date,
-      startTime,
-      agenda,
-      attendant,
-    });
+    const updated = await Meeting.findByIdAndUpdate(id, filterdObject);
     return updated;
   } catch (error) {
     throw new Error("[DB updateMeetingById] 에러", { cause: error });
@@ -77,7 +77,10 @@ const deleteMeetingById = async (id) => {
 
 const findMyMeetingByUsername = async (username) => {
   try {
-    const documents = await Meeting.find({ attendant: username });
+    const documents = await Meeting.find(
+      { attendant: username },
+      "_id creatorId attendant date startTime agenda creatorUsername checkedBy"
+    ).sort({ date: -1 });
     return documents;
   } catch (error) {
     throw new Error("[DB findMyMeetingByUsername] 에러", { cause: error });
@@ -109,6 +112,15 @@ const findMeetingsByMonth = async (startDate, endDate) => {
   }
 };
 
+const findUncheckedMeeting = async (userId) => {
+  try {
+    const document = await Meeting.findOne({ checkedBy: { $nin: [userId] } });
+    return !!document;
+  } catch (error) {
+    throw new Error("findUncheckedMeetings DB에러", { cause: error });
+  }
+};
+
 module.exports = {
   createMeeting,
   findMeetingById,
@@ -118,4 +130,5 @@ module.exports = {
   findMeetingByDate,
   findMeetingsByMonth,
   findMeeting,
+  findUncheckedMeeting,
 };

@@ -27,6 +27,10 @@ const MeetingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    checkedBy: {
+      type: [String],
+      required: true,
+    },
   },
   {
     timestamps: {
