@@ -108,7 +108,7 @@ const findMeetingsByMonth = async (startDate, endDate) => {
     );
     return documents;
   } catch (error) {
-    throw new Error("[DB getAllMeetings] 에러", { cause: error });
+    throw new Error("[DB findMeetingsByMonth] 에러", { cause: error });
   }
 };
 

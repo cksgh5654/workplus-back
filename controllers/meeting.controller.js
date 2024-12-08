@@ -127,7 +127,6 @@ meetingController.get("/month/:date", async (req, res) => {
   const { startDate, endDate } = getMonthStartEndDates(date);
   try {
     const meetings = await findMeetingsByMonth(startDate, endDate);
-    res.setHeader("Cache-Control", ["public", `max-age=${60 * 5}`]);
     return res.status(200).json({ isError: false, meetings });
   } catch (error) {
     console.log(error);
