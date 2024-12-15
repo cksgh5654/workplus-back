@@ -9,6 +9,11 @@ const processImageUrl = (url) => {
   return isGoolgeProvide ? url : `${BASE_URL}/${url}`;
 };
 
+/**
+ * 인수로받은 Date의 첫째 날과 마지막 날을 ISODate로반환 하는 함수
+ * @param {Date} date  yyyy-mm-dd
+ * @return {Object} 첫째 날 마지막 날을 가지는 객체
+ */
 const processDateToISODate = (date) => {
   return {
     startDate: new Date(`${date}T00:00:00.000Z`),
@@ -16,6 +21,11 @@ const processDateToISODate = (date) => {
   };
 };
 
+/**
+ * 인수로받은 Date의 첫째 날과 마지막 날을 반환 하는 함수
+ * @param {Date} date  yyyy-mm
+ * @return {Object} 첫째 날 마지막 날을 가지는 객체
+ */
 const getMonthStartEndDates = (date) => {
   const [year, month] = date.split("-");
   const lastDate = new Date(year, month, 0).getDate();
