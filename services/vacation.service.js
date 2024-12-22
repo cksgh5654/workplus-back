@@ -36,7 +36,8 @@ const findVacations = async (limit, skip) => {
     ) //
       .sort({ _id: 1 })
       .limit(limit)
-      .skip(limit * skip);
+      .skip(limit * skip)
+      .lean();
     return documents;
   } catch (error) {
     throw new Error("findVacations DB에러", { cause: error });
@@ -84,7 +85,7 @@ const deleteVacationById = async (id) => {
 
 const findVacationsByUserId = async (requesterId) => {
   try {
-    const vacations = await Vacation.find({ requesterId });
+    const vacations = await Vacation.find({ requesterId }).lean();
     return vacations;
   } catch (error) {
     throw new Error("[DB findVacationsByUserId] 에러", { cause: error });
@@ -96,7 +97,7 @@ const findVacationsByDate = async (startDate, endDate) => {
     const documents = await Vacation.find({
       startDate: { $lte: endDate },
       endDate: { $gte: startDate },
-    });
+    }).lean();
     return documents;
   } catch (error) {
     throw new Error("[DB findVacationsByDate] 에러", { cause: error });
@@ -114,7 +115,7 @@ const findVacationsByMonth = async (startDate, endDate) => {
         ],
       },
       "-__v -updatedAt"
-    );
+    ).lean();
     return documents;
   } catch (error) {
     throw new Error("[DB getAllVacations] 에러", { cause: error });

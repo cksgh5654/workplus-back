@@ -101,11 +101,6 @@ vacationController.get("/date/:date", async (req, res) => {
 
 vacationController.get("/month/:date", async (req, res) => {
   const { date } = req.params;
-  if (!date) {
-    return res
-      .status(400)
-      .json({ isError: true, message: "날자 데이터가 필요합니다." });
-  }
   const { startDate, endDate } = getMonthStartEndDates(date);
   try {
     const vacations = await findVacationsByMonth(startDate, endDate);

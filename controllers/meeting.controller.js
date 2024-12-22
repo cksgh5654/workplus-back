@@ -18,6 +18,11 @@ const meetingController = require("express").Router();
 
 meetingController.get("/", async (req, res) => {
   const { nextCursor: meetingId, limit = 20 } = req.query;
+  if (!meetingId) {
+    return res
+      .status(400)
+      .json({ isError: true, message: "회의 정보가 필요 합니다." });
+  }
   try {
     const meetings = await findMeeting(meetingId, limit);
     const nextCursor = meetings[meetings.length - 1]._id;
@@ -35,7 +40,7 @@ meetingController.get("/:meetingId", async (req, res) => {
     const document = await findMeetingById(req.params.meetingId);
     if (document === null) {
       return res
-        .status(400)
+        .status(404)
         .json({ isError: true, message: "잘못된 회의 데이터 요청 입니다." });
     }
     const {
@@ -105,6 +110,7 @@ meetingController.get("/date/:date", async (req, res) => {
       .status(400)
       .json({ isError: true, message: "날짜 데이터가 필요합니다." });
   }
+
   const { startDate, endDate } = processDateToISODate(date);
   try {
     const documets = await findMeetingByDate(startDate, endDate);
@@ -119,11 +125,7 @@ meetingController.get("/date/:date", async (req, res) => {
 
 meetingController.get("/month/:date", async (req, res) => {
   const { date } = req.params;
-  if (!date) {
-    return res
-      .status(400)
-      .json({ isError: true, message: "날짜 데이터가 필요 합니다." });
-  }
+
   const { startDate, endDate } = getMonthStartEndDates(date);
   try {
     const meetings = await findMeetingsByMonth(startDate, endDate);

@@ -29,7 +29,8 @@ const findMeeting = async (meetingId, limit) => {
   try {
     const documents = await Meeting.find(query) //
       .sort({ _id: 1 })
-      .limit(limit);
+      .limit(limit)
+      .lean();
     return documents;
   } catch (error) {
     throw new Error("findMeeting DB에러", { cause: error });
@@ -38,7 +39,7 @@ const findMeeting = async (meetingId, limit) => {
 
 const findMeetingById = async (id) => {
   try {
-    const document = await Meeting.findById(id);
+    const document = await Meeting.findById(id).lean();
     return document;
   } catch (error) {
     throw new Error("[DB findMeetingById] 에러", { cause: error });
@@ -59,7 +60,7 @@ const updateMeetingById = async (
     checkedBy: [username],
   });
   try {
-    const updated = await Meeting.findByIdAndUpdate(id, filterdObject);
+    const updated = await Meeting.findByIdAndUpdate(id, filterdObject).lean();
     return updated;
   } catch (error) {
     throw new Error("[DB updateMeetingById] 에러", { cause: error });
@@ -68,7 +69,7 @@ const updateMeetingById = async (
 
 const deleteMeetingById = async (id) => {
   try {
-    const deleted = await Meeting.findByIdAndDelete(id);
+    const deleted = await Meeting.findByIdAndDelete(id).lean();
     return deleted;
   } catch (error) {
     throw new Error("[DB deleteMeetingById] 에러", { cause: error });
@@ -80,7 +81,9 @@ const findMyMeetingByUsername = async (username) => {
     const documents = await Meeting.find(
       { attendant: username },
       "_id creatorId attendant date startTime agenda creatorUsername checkedBy"
-    ).sort({ date: -1 });
+    )
+      .sort({ date: -1 })
+      .lean();
     return documents;
   } catch (error) {
     throw new Error("[DB findMyMeetingByUsername] 에러", { cause: error });
@@ -91,7 +94,7 @@ const findMeetingByDate = async (startDate, endDate) => {
   try {
     const documents = await Meeting.find({
       date: { $gte: startDate, $lte: endDate },
-    });
+    }).lean();
     return documents;
   } catch (error) {
     throw new Error("[DB findMeetingByDate] 에러", { cause: error });
@@ -105,7 +108,7 @@ const findMeetingsByMonth = async (startDate, endDate) => {
         date: { $gte: startDate, $lte: endDate },
       },
       "-__v -updatedAt"
-    );
+    ).lean();
     return documents;
   } catch (error) {
     throw new Error("[DB findMeetingsByMonth] 에러", { cause: error });
@@ -117,8 +120,8 @@ const findUncheckedMeeting = async (username) => {
     const document = await Meeting.findOne({
       attendant: username,
       checkedBy: { $nin: [username] },
-    });
-    return !!document;
+    }).lean();
+    return document ?? false;
   } catch (error) {
     throw new Error("findUncheckedMeetings DB에러", { cause: error });
   }

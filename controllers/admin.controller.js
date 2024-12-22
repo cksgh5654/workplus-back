@@ -17,8 +17,10 @@ adminController.get("/users", async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
   const currentPage = Number(page);
   try {
-    const users = await getUsers(limit, currentPage - 1);
-    const totalUserCount = await getUsersCount();
+    const [users, totalUserCount] = await Promise.all([
+      getUsers(limit, currentPage - 1),
+      getUsersCount(),
+    ]);
     const totalPage = Math.ceil(totalUserCount / limit);
     const nextPage = currentPage + 1 > totalPage ? null : currentPage + 1;
     const prevPage = currentPage - 1 === 0 ? 0 : currentPage - 1;
@@ -39,8 +41,10 @@ adminController.get("/vacations", async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
   const currentPage = Number(page);
   try {
-    const vacations = await findVacations(limit, currentPage - 1);
-    const totalVacationCount = await getVacationsCount();
+    const [vacations, totalVacationCount] = await Promise.all([
+      findVacations(limit, currentPage - 1),
+      getVacationsCount(),
+    ]);
     const totalPage = Math.ceil(totalVacationCount / limit);
     const nextPage = currentPage + 1 > totalPage ? null : currentPage + 1;
     const prevPage = currentPage - 1 === 0 ? 0 : currentPage - 1;
@@ -67,8 +71,10 @@ adminController.get("/users/attendance", async (req, res) => {
   const { limit = 20, page = 1 } = req.query;
   const currentPage = Number(page);
   try {
-    const users = await getUsersAttendance(limit, currentPage - 1);
-    const totalUserCount = await getUsersCount();
+    const [users, totalUserCount] = await promises.all([
+      getUsersAttendance(limit, currentPage - 1),
+      getUsersCount(),
+    ]);
     const totalPage = Math.ceil(totalUserCount / limit);
     const nextPage = currentPage + 1 > totalPage ? null : currentPage + 1;
     const prevPage = currentPage - 1 === 0 ? 0 : currentPage - 1;
@@ -93,6 +99,11 @@ adminController.get("/users/attendance", async (req, res) => {
 
 adminController.patch("/vacation/:vacationId/status", async (req, res) => {
   const { status } = req.body;
+  if (!status) {
+    return res
+      .status(400)
+      .json({ isErorr: true, message: "상태(status)가 팔요합니다." });
+  }
   if (!VACATION_STATUS.includes(status)) {
     return res
       .status(400)
@@ -122,11 +133,6 @@ adminController.patch("/vacation/:vacationId/status", async (req, res) => {
 
 adminController.delete("/users/:userId", async (req, res) => {
   const { userId } = req.params;
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ isError: true, message: "유저 정보가 필요합니다." });
-  }
   try {
     const deleted = await deleteUserById(userId);
     if (deleted === null) {

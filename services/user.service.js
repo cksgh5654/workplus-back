@@ -28,7 +28,8 @@ const getUsers = async (limit, skip) => {
     const documents = User.find({}, "_id username email phone birth address") //
       .sort({ _id: 1 })
       .limit(limit)
-      .skip(limit * skip);
+      .skip(limit * skip)
+      .lean();
     return documents;
   } catch (error) {
     throw new Error("[findUsers 에러]", { cause: error });
@@ -76,7 +77,8 @@ const getUsersAttendance = async (limit, skip) => {
     const documents = await User.find({}, "_id username userImage attendance") //
       .sort({ _id: 1 })
       .limit(limit)
-      .skip(limit * skip);
+      .skip(limit * skip)
+      .lean();
     return documents;
   } catch (error) {
     throw new Error("[DB getUsersAttendance] 에러", { cause: error });
@@ -153,7 +155,7 @@ const updateUserByEmail = async (
     isAdmin,
   });
   try {
-    const updated = await User.updateOne({ email }, filterdObject);
+    const updated = await User.updateOne({ email }, filterdObject).lean();
     if (!updated) {
       return null;
     }
@@ -165,7 +167,7 @@ const updateUserByEmail = async (
 
 const deleteUserById = async (id) => {
   try {
-    const deleted = await User.findByIdAndDelete(id);
+    const deleted = await User.findByIdAndDelete(id).lean();
     return deleted;
   } catch (error) {
     throw new Error("DB에러", { cause: error });
