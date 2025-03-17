@@ -48,5 +48,6 @@ jobs:
             export FRONT_END_POINT=$FRONT_END_POINT &&
             export BASE_URL=$BASE_URL &&
             cd /home/ec2-user/workplus-back &&
+            git pull origin main &&
             npm install &&
             pm2 restart index.js || pm2 start index.js --name workplus-back"
