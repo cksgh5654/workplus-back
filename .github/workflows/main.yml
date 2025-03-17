@@ -1,0 +1,24 @@
+# Controls when the workflow will run
+on: # 이럴때 실행 해달라
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push: # push를 할때 
+    branches: #어떤것이?
+      - main #main이
+   # main의 정보에 push될때마다 실행을 해달라
+
+# 실행
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "export PORT=${{ secrets.PORT }} && cd /path/to/your/app && npm start"
