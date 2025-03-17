@@ -21,4 +21,4 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.209.89.34 "export PORT=${{ secrets.PORT }} && cd /home/ec2-user/workplus-back && npm start"
+          ssh -o StrictHostKeyChecking=no ec2-user@13.209.89.34 "export PORT=${{ secrets.PORT }} && cd /home/ec2-user/workplus-back && npm install && node index.js"
