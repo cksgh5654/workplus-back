@@ -33,7 +33,7 @@ jobs:
           FRONT_END_POINT: ${{ secrets.FRONT_END_POINT }}
           BASE_URL: ${{ secrets.BASE_URL }}
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.209.89.34 "
+          ssh -o StrictHostKeyChecking=no ec2-user@13.209.89.34
             export PORT=$PORT &&
             export MONGO_DB_URL="$MONGO_DB_URL" &&
             export MONGO_DB_COLLECTION="$MONGO_DB_COLLECTION" &&
