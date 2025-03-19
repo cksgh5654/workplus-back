@@ -34,19 +34,6 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no ec2-user@13.209.89.34 "
-            export PORT=${{ secrets.PORT }} &&
-            export MONGO_DB_URL=${{ secrets.MONGO_DB_URL }} &&
-            export MONGO_DB_COLLECTION=${{ secrets.MONGO_DB_COLLECTION }} &&
-            export GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }} &&
-            export GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} &&
-            export GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} &&
-            export GOOGLE_OAUTH_SIGNIN_REDIRECT_URL=${{ secrets.GOOGLE_OAUTH_SIGNIN_REDIRECT_URL }} &&
-            export GOOGLE_OAUTH_SIGNUP_REDIRECT_URL=${{ secrets.GOOGLE_OAUTH_SIGNUP_REDIRECT_URL }} &&
-            export NODEMAILER_AUTH_EMAIL=${{ secrets.NODEMAILER_AUTH_EMAIL }} &&
-            export NODEMAILER_AUTH_PASS=${{ secrets.NODEMAILER_AUTH_PASS }} &&
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} &&
-            export FRONT_END_POINT=${{ secrets.FRONT_END_POINT }} &&
-            export BASE_URL=${{ secrets.BASE_URL }} &&
             cd /home/ec2-user/workplus-back &&
             git pull origin main &&
             npm install &&
