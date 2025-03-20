@@ -33,51 +33,48 @@ jobs:
           FRONT_END_POINT: ${{ secrets.FRONT_END_POINT }}
           BASE_URL: ${{ secrets.BASE_URL }}
         run: |
-          echo "PORT: ${PORT}"
-          echo "MONGO_DB_URL: ${MONGO_DB_URL}"
           ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << EOF
             echo "🚀 배포 시작"
-            echo "PORT in SSH: ${PORT}"
-            echo "MONGO_DB_URL in SSH: ${MONGO_DB_URL}"
+
+            # 애플리케이션 폴더 이동
             cd /home/ubuntu/workplus-back
+            
+            # 환경 변수 설정
+            export PORT="$PORT"
+            export MONGO_DB_URL="$MONGO_DB_URL"
+            export MONGO_DB_COLLECTION="$MONGO_DB_COLLECTION"
+            export GOOGLE_API_KEY="$GOOGLE_API_KEY"
+            export GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"
+            export GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"
+            export GOOGLE_OAUTH_SIGNIN_REDIRECT_URL="$GOOGLE_OAUTH_SIGNIN_REDIRECT_URL"
+            export GOOGLE_OAUTH_SIGNUP_REDIRECT_URL="$GOOGLE_OAUTH_SIGNUP_REDIRECT_URL"
+            export NODEMAILER_AUTH_EMAIL="$NODEMAILER_AUTH_EMAIL"
+            export NODEMAILER_AUTH_PASS="$NODEMAILER_AUTH_PASS"
+            export JWT_SECRET_KEY="$JWT_SECRET_KEY"
+            export FRONT_END_POINT="$FRONT_END_POINT"
+            export BASE_URL="$BASE_URL"
+
+            # 환경 변수 확인 (디버깅용)
+            echo "PORT: \$PORT"
+            echo "MONGO_DB_URL: \$MONGO_DB_URL"
+            printenv | grep PORT
+
+            # 최신 코드 가져오기
             git pull origin main
+
+            # nvm 환경 로드
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
+
+            # Node.js 및 npm 버전 확인
             node -v
             npm -v
+
+            # 패키지 설치
             npm install
-            pm2 stop workplus-back || true
-            pm2 delete workplus-back || true
-            cat << INNER_EOF > ecosystem.config.js
-            module.exports = {
-              apps: [
-                {
-                  name: "workplus-back",
-                  script: "./index.js",
-                  env: {
-                    "PORT": "${PORT}",
-                    "MONGO_DB_URL": "${MONGO_DB_URL}",
-                    "MONGO_DB_COLLECTION": "${MONGO_DB_COLLECTION}",
-                    "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
-                    "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID}",
-                    "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET}",
-                    "GOOGLE_OAUTH_SIGNIN_REDIRECT_URL": "${GOOGLE_OAUTH_SIGNIN_REDIRECT_URL}",
-                    "GOOGLE_OAUTH_SIGNUP_REDIRECT_URL": "${GOOGLE_OAUTH_SIGNUP_REDIRECT_URL}",
-                    "NODEMAILER_AUTH_EMAIL": "${NODEMAILER_AUTH_EMAIL}",
-                    "NODEMAILER_AUTH_PASS": "${NODEMAILER_AUTH_PASS}",
-                    "JWT_SECRET_KEY": "${JWT_SECRET_KEY}",
-                    "FRONT_END_POINT": "${FRONT_END_POINT}",
-                    "BASE_URL": "${BASE_URL}"
-                  }
-                }
-              ]
-            }
-            INNER_EOF
-            echo "Generated ecosystem.config.js:"
-            cat ecosystem.config.js
-            pm2 start ecosystem.config.js
-            pm2 list
-            pm2 logs workplus-back --lines 20
-            curl http://localhost:3000 || echo "Local test failed"
+
+            # pm2 실행 (환경 변수 적용)
+            pm2 restart workplus-back --update-env || pm2 start index.js --name workplus-back --update-env
+
             echo "✅ 배포 완료"
           EOF
