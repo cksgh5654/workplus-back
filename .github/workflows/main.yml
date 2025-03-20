@@ -53,6 +53,10 @@ jobs:
             # 패키지 설치
             npm install
 
+            # PM2 기존 프로세스 삭제 (캐시 초기화)
+            pm2 stop workplus-back || true
+            pm2 delete workplus-back || true
+
             # PM2 환경 변수 설정 파일 생성
             cat > ecosystem.config.js << 'INNER_EOF'
             module.exports = {
@@ -80,15 +84,15 @@ jobs:
             }
             INNER_EOF
 
-            # 환경 변수 확인 (디버깅용)
-            echo "PORT from env: ${PORT}"
-            echo "MONGO_DB_URL from env: ${MONGO_DB_URL}"
+            # 생성된 설정 파일 확인
+            cat ecosystem.config.js
 
-            # PM2로 애플리케이션 실행
-            pm2 start ecosystem.config.js --update-env || pm2 restart workplus-back --update-env
+            # PM2로 새로 시작
+            pm2 start ecosystem.config.js
 
-            # 실행 상태 확인
+            # 실행 상태 및 로그 확인
             pm2 list
+            pm2 logs workplus-back --lines 10
 
             echo "✅ 배포 완료"
           EOF
