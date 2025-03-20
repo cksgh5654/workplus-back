@@ -35,12 +35,10 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << EOF
             echo "🚀 배포 시작"
-
-            # 애플리케이션 폴더로 이동
             cd /home/ubuntu/workplus-back
-
-            # .env 파일 생성
-            cat > .env << 'ENV_EOF'
+      
+            # .env 파일 생성 (스크립트 제외)
+            cat > .env << 'ENV_END'
             PORT=${PORT}
             MONGO_DB_URL=${MONGO_DB_URL}
             MONGO_DB_COLLECTION=${MONGO_DB_COLLECTION}
@@ -54,28 +52,17 @@ jobs:
             JWT_SECRET_KEY=${JWT_SECRET_KEY}
             FRONT_END_POINT=${FRONT_END_POINT}
             BASE_URL=${BASE_URL}
-            ENV_EOF
-
-            # 환경 변수 확인 (디버깅용)
+            ENV_END
+      
             echo "Generated .env file contents:"
             cat .env
-
-            # 최신 코드 가져오기
+      
             git pull origin main
-
-            # nvm 환경 로드
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
-
-            # Node.js 및 npm 버전 확인
             node -v
             npm -v
-
-            # 패키지 설치
             npm install
-
-            # pm2 실행 (환경 변수 적용)
             pm2 restart workplus-back --env production || pm2 start index.js --name workplus-back --env production
-
             echo "✅ 배포 완료"
           EOF
