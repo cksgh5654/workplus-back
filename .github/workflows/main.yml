@@ -36,7 +36,12 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << 'EOF'
             echo "🚀 배포 시작"
             cd /home/ubuntu/workplus-back
-
+      
+            # Secrets 디버깅
+            echo "Secrets check:"
+            echo "PORT=${PORT}"
+            echo "MONGO_DB_URL=${MONGO_DB_URL}"
+      
             # .env 파일 생성
             cat > .env << 'ENV_END'
             PORT=${PORT}
@@ -53,31 +58,26 @@ jobs:
             FRONT_END_POINT=${FRONT_END_POINT}
             BASE_URL=${BASE_URL}
             ENV_END
-
+      
             echo "Generated .env file contents:"
             cat .env
-
+      
             # Git 업데이트
             git fetch origin
             git checkout main
             git reset --hard origin/main
-
+      
             # NVM 로드
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             node -v
             npm -v
             npm install
-
+      
             # PM2 실행
             pm2 delete workplus-back || true
             pm2 start ecosystem.config.js
             pm2 save
-
-            # 디버깅
-            pm2 list
-            pm2 logs workplus-back --lines 20
-            curl http://localhost:3000 || echo "Local test failed"
-
+      
             echo "✅ 배포 완료"
           EOF
