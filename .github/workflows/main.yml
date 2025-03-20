@@ -36,6 +36,10 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << EOF
             echo "🚀 배포 시작"
 
+            # 디버깅: 환경 변수 확인
+            echo "PORT from GitHub Actions: ${PORT}"
+            echo "MONGO_DB_URL from GitHub Actions: ${MONGO_DB_URL}"
+
             # 애플리케이션 폴더 이동
             cd /home/ubuntu/workplus-back
 
@@ -53,11 +57,11 @@ jobs:
             # 패키지 설치
             npm install
 
-            # PM2 기존 프로세스 삭제 (캐시 초기화)
+            # PM2 기존 프로세스 정리
             pm2 stop workplus-back || true
             pm2 delete workplus-back || true
 
-            # PM2 환경 변수 설정 파일 생성
+            # PM2 설정 파일 생성
             cat > ecosystem.config.js << 'INNER_EOF'
             module.exports = {
               apps: [
@@ -65,7 +69,7 @@ jobs:
                   name: "workplus-back",
                   script: "./index.js",
                   env: {
-                    "PORT": "${PORT}",
+                    "PORT": "${PORT:-3000}",
                     "MONGO_DB_URL": "${MONGO_DB_URL}",
                     "MONGO_DB_COLLECTION": "${MONGO_DB_COLLECTION}",
                     "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
@@ -84,15 +88,19 @@ jobs:
             }
             INNER_EOF
 
-            # 생성된 설정 파일 확인
+            # 설정 파일 디버깅
+            echo "Generated ecosystem.config.js:"
             cat ecosystem.config.js
 
-            # PM2로 새로 시작
+            # PM2 시작
             pm2 start ecosystem.config.js
 
-            # 실행 상태 및 로그 확인
+            # 상태 및 로그 확인
             pm2 list
-            pm2 logs workplus-back --lines 10
+            pm2 logs workplus-back --lines 20
+
+            # 로컬 테스트
+            curl http://localhost:3000 || echo "Local test failed"
 
             echo "✅ 배포 완료"
           EOF
