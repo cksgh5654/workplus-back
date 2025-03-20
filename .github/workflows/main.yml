@@ -51,6 +51,11 @@ jobs:
             export FRONT_END_POINT=${FRONT_END_POINT}
             export BASE_URL=${BASE_URL}
 
+            # 환경 변수 확인 (디버깅용)
+            echo "PORT: $PORT"
+            echo "MONGO_DB_URL: $MONGO_DB_URL"
+            printenv | grep PORT  # 포트 환경 변수 확인
+
             # 애플리케이션 폴더 이동
             cd /home/ubuntu/workplus-back
 
