@@ -37,7 +37,7 @@ jobs:
             echo "🚀 배포 시작"
             cd /home/ubuntu/workplus-back
       
-            # .env 파일 생성 (스크립트 제외)
+            # .env 파일 생성
             cat > .env << 'ENV_END'
             PORT=${PORT}
             MONGO_DB_URL=${MONGO_DB_URL}
@@ -58,11 +58,17 @@ jobs:
             cat .env
       
             git pull origin main
+      
+            # NVM 로드
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
             node -v
             npm -v
             npm install
-            pm2 restart workplus-back --env production || pm2 start index.js --name workplus-back --env production
+      
+            # PM2로 ecosystem.config.js 실행
+            pm2 delete workplus-back || true  # 기존 프로세스 삭제 (실패해도 진행)
+            pm2 start ecosystem.config.js
+            pm2 save
             echo "✅ 배포 완료"
           EOF
