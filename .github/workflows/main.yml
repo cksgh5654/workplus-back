@@ -37,12 +37,7 @@ jobs:
             echo "🚀 배포 시작"
             cd /home/ubuntu/workplus-back
 
-            # Secrets 디버깅
-            echo "Secrets check:"
-            echo "PORT=${PORT}"
-            echo "MONGO_DB_URL=${MONGO_DB_URL}"
-
-            # .env 파일 생성 (변수 확장 허용)
+            # .env 파일 생성
             cat > .env << ENV_END
             PORT=${PORT}
             MONGO_DB_URL=${MONGO_DB_URL}
@@ -59,6 +54,7 @@ jobs:
             BASE_URL=${BASE_URL}
             ENV_END
 
+            # .env 파일 확인
             echo "Generated .env file contents:"
             cat .env
 
@@ -67,7 +63,7 @@ jobs:
             git checkout main
             git reset --hard origin/main
 
-            # NVM 로드
+            # NVM 로드 (경로 수정)
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
             node -v
