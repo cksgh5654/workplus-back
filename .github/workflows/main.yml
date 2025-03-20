@@ -17,7 +17,7 @@ jobs:
 
       - name: Deploy to EC2 with environment variables
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@13.209.89.34 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << 'EOF'
             # 환경변수 설정
             export PORT=${{ secrets.PORT }}
             export MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}
@@ -33,7 +33,7 @@ jobs:
             export FRONT_END_POINT=${{ secrets.FRONT_END_POINT }}
             export BASE_URL=${{ secrets.BASE_URL }}
 
-            cd /home/ec2-user/workplus-back
+            cd /home/ubuntu/workplus-back
             git pull origin main
             npm install
             # pm2 실행 시 --update-env 옵션을 사용하여 새 환경변수가 적용되도록 함
