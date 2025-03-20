@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const { MONGO_DB_URL } = require("./consts/app");
 
 mongoose
