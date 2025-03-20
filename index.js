@@ -1,4 +1,3 @@
-require("dotenv").config({ path: "/home/ubuntu/workplus-back/.env" });
 const express = require("express");
 const apiController = require("./controllers");
 
