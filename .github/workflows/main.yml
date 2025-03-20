@@ -37,7 +37,7 @@ jobs:
           echo "PORT: ${PORT}"
           echo "MONGO_DB_URL: ${MONGO_DB_URL}"
 
-          ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << EOF
             echo "🚀 배포 시작"
 
             # SSH 세션 내 환경 변수 확인
@@ -51,8 +51,8 @@ jobs:
             git pull origin main
 
             # nvm 환경 로드
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export NVM_DIR="\$HOME/.nvm"
+            [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
 
             # Node.js 및 npm 버전 확인
             node -v
@@ -66,7 +66,7 @@ jobs:
             pm2 delete workplus-back || true
 
             # PM2 설정 파일 생성
-            cat > ecosystem.config.js << 'INNER_EOF'
+            cat > ecosystem.config.js << INNER_EOF
             module.exports = {
               apps: [
                 {
