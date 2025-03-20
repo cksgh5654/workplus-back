@@ -10,8 +10,6 @@ app.use(express.static("public"));
 
 app.use("/api", apiController);
 
-const PORT = process.env.PORT;
-
 app.listen(PORT, () => {
   console.log(`Express Running on ${PORT}`);
 });
