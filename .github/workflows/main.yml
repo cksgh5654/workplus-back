@@ -33,7 +33,7 @@ jobs:
           FRONT_END_POINT: ${{ secrets.FRONT_END_POINT }}
           BASE_URL: ${{ secrets.BASE_URL }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@3.39.22.162 << EOF
             echo "🚀 배포 시작"
             cd /home/ubuntu/workplus-back
 
@@ -42,8 +42,8 @@ jobs:
             echo "PORT=${PORT}"
             echo "MONGO_DB_URL=${MONGO_DB_URL}"
 
-            # .env 파일 생성
-            cat > .env << 'ENV_END'
+            # .env 파일 생성 (변수 확장 허용)
+            cat > .env << ENV_END
             PORT=${PORT}
             MONGO_DB_URL=${MONGO_DB_URL}
             MONGO_DB_COLLECTION=${MONGO_DB_COLLECTION}
@@ -68,8 +68,8 @@ jobs:
             git reset --hard origin/main
 
             # NVM 로드
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export NVM_DIR="\$HOME/.nvm"
+            [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"
             node -v
             npm -v
             npm install
