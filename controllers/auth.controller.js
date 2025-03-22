@@ -306,10 +306,12 @@ authController.post("/google-oauth-signin", async (req, res) => {
       isAdmin: user.isAdmin || false,
       userId: user._id,
     };
-    return res.json({ isError: false, user: userData });
+    return res.status(200).json({ isError: false, user: userData });
   } catch (error) {
     console.log(error);
-    return res.json({ isError: true, message: "구글로 로그인 실패" });
+    return res
+      .status(500)
+      .json({ isError: true, message: "구글로 로그인 실패" });
   }
 });
 
